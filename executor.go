@@ -295,13 +295,13 @@ func executeSubFields(p executeFieldsParams) map[string]interface{} {
 	}
 
 	finalResults := make(map[string]interface{}, len(p.Fields))
-	for responseName, fieldASTs := range p.Fields {
-		fieldPath := p.Path.WithKey(responseName)
-		resolved, state := resolveField(p.ExecutionContext, p.ParentType, p.Source, fieldASTs, fieldPath)
+	for _, orderedField := range orderedFields(p.Fields) {
+		fieldPath := p.Path.WithKey(orderedField.responseName)
+		resolved, state := resolveField(p.ExecutionContext, p.ParentType, p.Source, orderedField.fieldASTs, fieldPath)
 		if state.hasNoFieldDefs {
 			continue
 		}
-		finalResults[responseName] = resolved
+		finalResults[orderedField.responseName] = resolved
 	}
 
 	return finalResults
