@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/graphql-go/graphql/language/ast"
-	"github.com/graphql-go/graphql/language/parser"
+	"github.com/machship/graphql"
+	"github.com/machship/graphql/gqlerrors"
+	"github.com/machship/graphql/language/ast"
+	"github.com/machship/graphql/language/parser"
 )
 
 var (

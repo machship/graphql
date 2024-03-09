@@ -8,10 +8,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/graphql-go/graphql/language/ast"
-	"github.com/graphql-go/graphql/language/kinds"
-	"github.com/graphql-go/graphql/language/printer"
+	"github.com/machship/graphql/gqlerrors"
+	"github.com/machship/graphql/language/ast"
+	"github.com/machship/graphql/language/kinds"
+	"github.com/machship/graphql/language/printer"
 )
 
 // Prepares an object map of variableValues of the correct type based on the
