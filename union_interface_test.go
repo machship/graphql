@@ -560,8 +560,7 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 	ast := testutil.TestParse(t, doc)
 
 	// create context
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "authToken", "contextStringValue123")
+	ctx := testutil.ContextWithValue(context.Background(), "authToken", "contextStringValue123")
 
 	// execute
 	ep := graphql.ExecuteParams{

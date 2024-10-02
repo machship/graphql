@@ -156,7 +156,7 @@ func TestBasicGraphQLExample(t *testing.T) {
 
 func TestThreadsContextFromParamsThrough(t *testing.T) {
 	extractFieldFromContextFn := func(p graphql.ResolveParams) (any, error) {
-		return p.Context.Value(p.Args["key"]), nil
+		return testutil.ContextValue(p.Context, p.Args["key"].(string)), nil
 	}
 
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
@@ -181,7 +181,7 @@ func TestThreadsContextFromParamsThrough(t *testing.T) {
 	result := graphql.Do(graphql.Params{
 		Schema:        schema,
 		RequestString: query,
-		Context:       context.WithValue(context.TODO(), "a", "xyz"),
+		Context:       testutil.ContextWithValue(context.Background(), "a", "xyz"),
 	})
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)

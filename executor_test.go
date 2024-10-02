@@ -525,7 +525,7 @@ func TestThreadsContextCorrectly(t *testing.T) {
 				"a": &graphql.Field{
 					Type: graphql.String,
 					Resolve: func(p graphql.ResolveParams) (any, error) {
-						return p.Context.Value("foo"), nil
+						return testutil.ContextValue(p.Context, "foo"), nil
 					},
 				},
 			},
@@ -542,7 +542,7 @@ func TestThreadsContextCorrectly(t *testing.T) {
 	ep := graphql.ExecuteParams{
 		Schema:  schema,
 		AST:     ast,
-		Context: context.WithValue(context.Background(), "foo", "bar"),
+		Context: testutil.ContextWithValue(context.Background(), "foo", "bar"),
 	}
 	result := testutil.TestExecute(t, ep)
 	if len(result.Errors) > 0 {

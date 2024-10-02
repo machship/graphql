@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -245,7 +246,7 @@ func init() {
 								"id":   friend.ID,
 							})
 						}
-						return droid.Friends, nil
+						return friends, nil
 					}
 					return []any{}, nil
 				},
@@ -501,4 +502,17 @@ func EqualResults(expected, result *graphql.Result) bool {
 		return false
 	}
 	return EqualFormattedErrors(expected.Errors, result.Errors)
+}
+
+// testCtxKey is a type to avoid key collisions in context values.
+type testCtxKey string
+
+// ContextWithValue inserts value into the context.
+func ContextWithValue(ctx context.Context, k string, v any) context.Context {
+	return context.WithValue(ctx, testCtxKey(k), v)
+}
+
+// ContextValue retrieves a value from the context.
+func ContextValue(ctx context.Context, k string) any {
+	return ctx.Value(testCtxKey(k))
 }

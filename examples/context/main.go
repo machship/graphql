@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/machship/graphql"
+	"github.com/machship/graphql/testutil"
 )
 
 var Schema graphql.Schema
@@ -33,7 +34,7 @@ var queryType = graphql.NewObject(
 			"me": &graphql.Field{
 				Type: userType,
 				Resolve: func(p graphql.ResolveParams) (any, error) {
-					return p.Context.Value("currentUser"), nil
+					return testutil.ContextValue(p.Context, "currentUser"), nil
 				},
 			},
 		},
@@ -47,7 +48,7 @@ func graphqlHandler(w http.ResponseWriter, r *http.Request) {
 	result := graphql.Do(graphql.Params{
 		Schema:        Schema,
 		RequestString: r.URL.Query().Get("query"),
-		Context:       context.WithValue(context.Background(), "currentUser", user),
+		Context:       testutil.ContextWithValue(context.Background(), "currentUser", user),
 	})
 	if len(result.Errors) > 0 {
 		log.Printf("wrong result, unexpected errors: %v", result.Errors)
