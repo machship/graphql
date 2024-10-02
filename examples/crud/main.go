@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"time"
 
 	"github.com/machship/graphql"
 )
@@ -121,7 +120,6 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (any, error) {
-				rand.Seed(time.Now().UnixNano())
 				product := Product{
 					ID:    int64(rand.Intn(100000)), // generate random ID
 					Name:  params.Args["name"].(string),

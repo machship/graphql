@@ -142,7 +142,7 @@ func (ctx *ValidationContext) Fragment(name string) *ast.FragmentDefinition {
 		}
 		ctx.fragments = fragments
 	}
-	f, _ := ctx.fragments[name]
+	f := ctx.fragments[name]
 	return f
 }
 func (ctx *ValidationContext) FragmentSpreads(node *ast.SelectionSet) []*ast.FragmentSpread {

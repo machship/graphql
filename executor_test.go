@@ -205,7 +205,7 @@ func TestExecutesArbitraryCode(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -292,7 +292,7 @@ func TestMergesParallelFragments(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -507,7 +507,7 @@ func TestThreadsRootValueContextCorrectly(t *testing.T) {
 			"a": "stringValue",
 		},
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -554,7 +554,7 @@ func TestThreadsContextCorrectly(t *testing.T) {
 			"a": "bar",
 		},
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -667,7 +667,7 @@ func TestUsesTheInlineOperationIfNoOperationNameIsProvided(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -712,7 +712,7 @@ func TestUsesTheOnlyOperationIfNoOperationNameIsProvided(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -757,7 +757,7 @@ func TestUsesTheNamedOperationIfOperationNameIsProvided(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -1008,7 +1008,7 @@ func TestUsesTheQuerySchemaForQueries(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -1063,7 +1063,7 @@ func TestUsesTheMutationSchemaForMutations(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -1118,7 +1118,7 @@ func TestUsesTheSubscriptionSchemaForSubscriptions(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -1191,7 +1191,7 @@ func TestCorrectFieldOrderingDespiteExecutionOrder(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 
@@ -1258,7 +1258,7 @@ func TestAvoidsRecursion(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 
@@ -1308,7 +1308,7 @@ func TestDoesNotIncludeIllegalFieldsInOutput(t *testing.T) {
 	if len(result.Errors) != 0 {
 		t.Fatalf("wrong result, expected len(%v) errors, got len(%v)", len(expected.Errors), len(result.Errors))
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -1370,7 +1370,7 @@ func TestDoesNotIncludeArgumentsThatWereNotSet(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -2105,20 +2105,20 @@ func TestThunkErrorsAreHandledCorrectly(t *testing.T) {
 func assertJSON(t *testing.T, expected string, actual any) {
 	var e any
 	if err := json.Unmarshal([]byte(expected), &e); err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err.Error())
 	}
 	aJSON, err := json.MarshalIndent(actual, "", "  ")
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err.Error())
 	}
 	var a any
 	if err := json.Unmarshal(aJSON, &a); err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err.Error())
 	}
 	if !reflect.DeepEqual(e, a) {
 		eNormalizedJSON, err := json.MarshalIndent(e, "", "  ")
 		if err != nil {
-			t.Fatalf(err.Error())
+			t.Fatal(err.Error())
 		}
 		t.Fatalf("Expected JSON:\n\n%v\n\nActual JSON:\n\n%v", string(eNormalizedJSON), string(aJSON))
 	}

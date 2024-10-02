@@ -101,7 +101,6 @@ func ExecuteSubscription(p ExecuteParams) chan *Result {
 					Errors: gqlerrors.FormatErrors(e),
 				}
 			}
-			return
 		}()
 
 		exeContext, err := buildExecutionContext(buildExecutionCtxParams{
@@ -202,15 +201,14 @@ func ExecuteSubscription(p ExecuteParams) chan *Result {
 			return
 		}
 
-		switch fieldResult.(type) {
+		switch v := fieldResult.(type) {
 		case chan any:
-			sub := fieldResult.(chan any)
 			for {
 				select {
 				case <-p.Context.Done():
 					return
 
-				case res, more := <-sub:
+				case res, more := <-v:
 					if !more {
 						return
 					}

@@ -468,10 +468,10 @@ func (rule *overlappingFieldsCanBeMergedRule) getFieldsAndFragmentNames(parentTy
 				}
 				var fieldDef *FieldDefinition
 				if parentType, ok := parentType.(*Object); ok && parentType != nil {
-					fieldDef, _ = parentType.Fields()[fieldName]
+					fieldDef = parentType.Fields()[fieldName]
 				}
 				if parentType, ok := parentType.(*Interface); ok && parentType != nil {
-					fieldDef, _ = parentType.Fields()[fieldName]
+					fieldDef = parentType.Fields()[fieldName]
 				}
 
 				responseName := fieldName
@@ -586,7 +586,7 @@ func (pair *pairSet) Has(a string, b string, areMutuallyExclusive bool) bool {
 	// hence if we want to know if this PairSet "has" these two with no
 	// exclusivity, we have to ensure it was added as such.
 	if !areMutuallyExclusive {
-		return res == false
+		return !res
 	}
 	return true
 }
@@ -629,7 +629,7 @@ func sameArguments(args1 []*ast.Argument, args2 []*ast.Argument) bool {
 		if foundArgs2 == nil {
 			return false
 		}
-		if sameValue(arg1.Value, foundArgs2.Value) == false {
+		if !sameValue(arg1.Value, foundArgs2.Value) {
 			return false
 		}
 	}

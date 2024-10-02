@@ -454,7 +454,7 @@ func (gt *Object) Interfaces() []*Interface {
 		configInterfaces = iface
 	case nil:
 	default:
-		gt.err = fmt.Errorf("Unknown Object.Interfaces type: %T", gt.typeConfig.Interfaces)
+		gt.err = fmt.Errorf("unknown Object.Interfaces type: %T", gt.typeConfig.Interfaces)
 		gt.initialisedInterfaces = true
 		return nil
 	}
@@ -796,7 +796,6 @@ type Union struct {
 	typeConfig      UnionConfig
 	initalizedTypes bool
 	types           []*Object
-	possibleTypes   map[string]bool
 
 	err error
 }
@@ -841,7 +840,7 @@ func (ut *Union) Types() []*Object {
 		unionTypes = utype
 	case nil:
 	default:
-		ut.err = fmt.Errorf("Unknown Union.Types type: %T", ut.typeConfig.Types)
+		ut.err = fmt.Errorf("unknown Union.Types type: %T", ut.typeConfig.Types)
 		ut.initalizedTypes = true
 		return nil
 	}

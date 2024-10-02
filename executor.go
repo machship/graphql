@@ -70,7 +70,7 @@ func Execute(p ExecuteParams) (result *Result) {
 		})
 
 		if err != nil {
-			result.Errors = append(result.Errors, gqlerrors.FormatError(err.(error)))
+			result.Errors = append(result.Errors, gqlerrors.FormatError(err))
 			resultChannel <- result
 			return
 		}
@@ -121,7 +121,7 @@ func buildExecutionContext(p buildExecutionCtxParams) (*executionContext, error)
 		switch definition := definition.(type) {
 		case *ast.OperationDefinition:
 			if (p.OperationName == "") && operation != nil {
-				return nil, errors.New("Must provide operation name if query contains multiple operations.")
+				return nil, errors.New("must provide operation name if query contains multiple operations")
 			}
 			if p.OperationName == "" || definition.GetName() != nil && definition.GetName().Value == p.OperationName {
 				operation = definition
@@ -139,9 +139,9 @@ func buildExecutionContext(p buildExecutionCtxParams) (*executionContext, error)
 
 	if operation == nil {
 		if p.OperationName != "" {
-			return nil, fmt.Errorf(`Unknown operation named "%v".`, p.OperationName)
+			return nil, fmt.Errorf(`unknown operation named "%v"`, p.OperationName)
 		}
-		return nil, fmt.Errorf(`Must provide an operation.`)
+		return nil, fmt.Errorf(`must provide an operation`)
 	}
 
 	variableValues, err := getVariableValues(p.Schema, operation.GetVariableDefinitions(), p.Args)
@@ -193,7 +193,7 @@ func executeOperation(p executeOperationParams) *Result {
 // Extracts the root type of the operation from the schema.
 func getOperationRootType(schema Schema, operation ast.Definition) (*Object, error) {
 	if operation == nil {
-		return nil, errors.New("Can only execute queries, mutations and subscription")
+		return nil, errors.New("can only execute queries, mutations and subscription")
 	}
 
 	switch operation.GetOperation() {
@@ -913,11 +913,7 @@ func defaultResolveTypeFn(p ResolveTypeParams, abstractType Abstract) *Object {
 		if possibleType.IsTypeOf == nil {
 			continue
 		}
-		isTypeOfParams := IsTypeOfParams{
-			Value:   p.Value,
-			Info:    p.Info,
-			Context: p.Context,
-		}
+		isTypeOfParams := IsTypeOfParams(p)
 		if res := possibleType.IsTypeOf(isTypeOfParams); res {
 			return possibleType
 		}

@@ -557,7 +557,7 @@ func expectValidRule(t *testing.T, schema *graphql.Schema, rules []graphql.Valid
 	if len(result.Errors) > 0 {
 		t.Fatalf("Should validate, got %v", result.Errors)
 	}
-	if result.IsValid != true {
+	if !result.IsValid {
 		t.Fatalf("IsValid should be true, got %v", result.IsValid)
 	}
 
@@ -574,7 +574,7 @@ func expectInvalidRule(t *testing.T, schema *graphql.Schema, rules []graphql.Val
 	if len(result.Errors) != len(expectedErrors) {
 		t.Fatalf("Should have %v errors, got %v", len(expectedErrors), len(result.Errors))
 	}
-	if result.IsValid != false {
+	if result.IsValid {
 		t.Fatalf("IsValid should be false, got %v", result.IsValid)
 	}
 	for _, expectedErr := range expectedErrors {
@@ -585,7 +585,7 @@ func expectInvalidRule(t *testing.T, schema *graphql.Schema, rules []graphql.Val
 				break
 			}
 		}
-		if found == false {
+		if !found {
 			t.Fatalf("Unexpected result, Diff: %v", Diff(expectedErrors, result.Errors))
 		}
 	}

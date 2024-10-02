@@ -3,9 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
-	"time"
 
 	"github.com/machship/graphql"
 	"github.com/machship/graphql/examples/todo/schema"
@@ -16,8 +14,6 @@ func init() {
 	todo2 := schema.Todo{ID: "b", Text: "This is the most important", Done: false}
 	todo3 := schema.Todo{ID: "c", Text: "Please do this or else", Done: false}
 	schema.TodoList = append(schema.TodoList, todo1, todo2, todo3)
-
-	rand.Seed(time.Now().UnixNano())
 }
 
 func executeQuery(query string, schema graphql.Schema) *graphql.Result {

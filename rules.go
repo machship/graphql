@@ -234,7 +234,7 @@ func FieldsOnCorrectTypeRule(context *ValidationContext) *ValidationRuleInstance
 							// If there are no suggested types, then perhaps this was a typo?
 							suggestedFieldNames := []string{}
 							if len(suggestedTypeNames) == 0 {
-								suggestedFieldNames = getSuggestedFieldNames(context.Schema(), ttype, nodeName)
+								suggestedFieldNames = getSuggestedFieldNames(ttype, nodeName)
 							}
 							reportError(
 								context,
@@ -323,9 +323,9 @@ func getSuggestedTypeNames(schema *Schema, ttype Output, fieldName string) []str
 
 // getSuggestedFieldNames For the field name provided, determine if there are any similar field names
 // that may be the result of a typo.
-func getSuggestedFieldNames(schema *Schema, ttype Output, fieldName string) []string {
+func getSuggestedFieldNames(ttype Output, fieldName string) []string {
 
-	fields := FieldDefinitionMap{}
+	var fields FieldDefinitionMap
 	switch ttype := ttype.(type) {
 	case *Object:
 		fields = ttype.Fields()
@@ -1043,7 +1043,7 @@ func NoUnusedFragmentsRule(context *ValidationContext) *ValidationRuleInstance {
 						}
 
 						isFragNameUsed, ok := fragmentNameUsed[defName]
-						if !ok || isFragNameUsed != true {
+						if !ok || !isFragNameUsed {
 							reportError(
 								context,
 								fmt.Sprintf(`Fragment "%v" is never used.`, defName),
@@ -1176,7 +1176,7 @@ func doTypesOverlap(schema *Schema, t1 Type, t2 Type) bool {
 		}
 		if t2, ok := t2.(Abstract); ok {
 			for _, ttype := range schema.PossibleTypes(t2) {
-				if hasT1TypeName, _ := t1TypeNames[ttype.Name()]; hasT1TypeName {
+				if hasT1TypeName := t1TypeNames[ttype.Name()]; hasT1TypeName {
 					return true
 				}
 			}
@@ -1269,7 +1269,7 @@ func ProvidedNonNullArgumentsRule(context *ValidationContext) *ValidationRuleIns
 							argASTMap[name] = arg
 						}
 						for _, argDef := range fieldDef.Args {
-							argAST, _ := argASTMap[argDef.Name()]
+							argAST := argASTMap[argDef.Name()]
 							if argAST == nil {
 								if argDefType, ok := argDef.Type.(*NonNull); ok {
 									fieldName := ""
@@ -1310,7 +1310,7 @@ func ProvidedNonNullArgumentsRule(context *ValidationContext) *ValidationRuleIns
 						}
 
 						for _, argDef := range directiveDef.Args {
-							argAST, _ := argASTMap[argDef.Name()]
+							argAST := argASTMap[argDef.Name()]
 							if argAST == nil {
 								if argDefType, ok := argDef.Type.(*NonNull); ok {
 									directiveName := ""
@@ -1677,7 +1677,7 @@ func VariablesInAllowedPositionRule(context *ValidationContext) *ValidationRuleI
 							if usage != nil && usage.Node != nil && usage.Node.Name != nil {
 								varName = usage.Node.Name.Value
 							}
-							varDef, _ := varDefMap[varName]
+							varDef := varDefMap[varName]
 							if varDef != nil && usage.Type != nil {
 								varType, err := typeFromAST(*context.Schema(), varDef.Type)
 								if err != nil {

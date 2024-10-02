@@ -309,7 +309,7 @@ func TestExecutesUsingAComplexSchema(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }

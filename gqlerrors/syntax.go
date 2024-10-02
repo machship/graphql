@@ -36,7 +36,7 @@ func printLine(str string) string {
 	for _, runeValue := range str {
 		strSlice = append(strSlice, printCharCode(runeValue))
 	}
-	return fmt.Sprintf(`%s`, strings.Join(strSlice, ""))
+	return strings.Join(strSlice, "")
 }
 func highlightSourceAtLocation(s *source.Source, l location.SourceLocation) string {
 	line := l.Line

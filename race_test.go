@@ -1,7 +1,6 @@
 package graphql_test
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -9,14 +8,11 @@ import (
 )
 
 func TestRace(t *testing.T) {
-	tempdir, err := ioutil.TempDir("", "race")
-	if err != nil {
-		t.Fatal(err)
-	}
+	tempdir := filepath.Join(os.TempDir(), "race")
 	defer os.RemoveAll(tempdir)
 
 	filename := filepath.Join(tempdir, "example.go")
-	err = ioutil.WriteFile(filename, []byte(`
+	err := os.WriteFile(filename, []byte(`
 		package main
 
 		import (

@@ -275,10 +275,8 @@ func isValidInputValue(value any, ttype Input) (bool, []string) {
 		// Ensure every defined field is valid.
 		for _, fieldName := range fieldNames {
 			_, messages := isValidInputValue(valueMap[fieldName], fields[fieldName].Type)
-			if messages != nil {
-				for _, message := range messages {
-					messagesReduce = append(messagesReduce, fmt.Sprintf(`In field "%v": %v`, fieldName, message))
-				}
+			for _, message := range messages {
+				messagesReduce = append(messagesReduce, fmt.Sprintf(`In field "%v": %v`, fieldName, message))
 			}
 		}
 		return (len(messagesReduce) == 0), messagesReduce
@@ -314,9 +312,10 @@ func isNullish(src any) bool {
 			return true
 		}
 	case reflect.Int:
-		return math.IsNaN(float64(value.Int()))
+		return false
+
 	case reflect.Float32, reflect.Float64:
-		return math.IsNaN(float64(value.Float()))
+		return math.IsNaN(value.Float())
 	}
 	return false
 }

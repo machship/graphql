@@ -9,7 +9,7 @@ import (
 	"github.com/machship/graphql/testutil"
 )
 
-func g(t *testing.T, p graphql.Params) *graphql.Result {
+func g(_ *testing.T, p graphql.Params) *graphql.Result {
 	return graphql.Do(p)
 }
 

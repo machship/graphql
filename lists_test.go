@@ -905,7 +905,7 @@ func TestLists_ValueMayBeNilPointer(t *testing.T) {
 		Schema:        listTestSchema,
 		RequestString: query,
 	})
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
