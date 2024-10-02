@@ -23,9 +23,9 @@ var directivesTestSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	}),
 })
 
-var directivesTestData map[string]interface{} = map[string]interface{}{
-	"a": func() interface{} { return "a" },
-	"b": func() interface{} { return "b" },
+var directivesTestData map[string]any = map[string]any{
+	"a": func() any { return "a" },
+	"b": func() any { return "b" },
 }
 
 func executeDirectivesTestQuery(t *testing.T, doc string) *graphql.Result {
@@ -147,7 +147,7 @@ func TestDirectives_DirectiveArgNamesMustBeValid(t *testing.T) {
 func TestDirectivesWorksWithoutDirectives(t *testing.T) {
 	query := `{ a, b }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -161,7 +161,7 @@ func TestDirectivesWorksWithoutDirectives(t *testing.T) {
 func TestDirectivesWorksOnScalarsIfTrueIncludesScalar(t *testing.T) {
 	query := `{ a, b @include(if: true) }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -175,7 +175,7 @@ func TestDirectivesWorksOnScalarsIfTrueIncludesScalar(t *testing.T) {
 func TestDirectivesWorksOnScalarsIfFalseOmitsOnScalar(t *testing.T) {
 	query := `{ a, b @include(if: false) }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -188,7 +188,7 @@ func TestDirectivesWorksOnScalarsIfFalseOmitsOnScalar(t *testing.T) {
 func TestDirectivesWorksOnScalarsUnlessFalseIncludesScalar(t *testing.T) {
 	query := `{ a, b @skip(if: false) }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -202,7 +202,7 @@ func TestDirectivesWorksOnScalarsUnlessFalseIncludesScalar(t *testing.T) {
 func TestDirectivesWorksOnScalarsUnlessTrueOmitsScalar(t *testing.T) {
 	query := `{ a, b @skip(if: true) }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -223,7 +223,7 @@ func TestDirectivesWorksOnFragmentSpreadsIfFalseOmitsFragmentSpread(t *testing.T
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -244,7 +244,7 @@ func TestDirectivesWorksOnFragmentSpreadsIfTrueIncludesFragmentSpread(t *testing
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -266,7 +266,7 @@ func TestDirectivesWorksOnFragmentSpreadsUnlessFalseIncludesFragmentSpread(t *te
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -288,7 +288,7 @@ func TestDirectivesWorksOnFragmentSpreadsUnlessTrueOmitsFragmentSpread(t *testin
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -308,7 +308,7 @@ func TestDirectivesWorksOnInlineFragmentIfFalseOmitsInlineFragment(t *testing.T)
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -328,7 +328,7 @@ func TestDirectivesWorksOnInlineFragmentIfTrueIncludesInlineFragment(t *testing.
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -349,7 +349,7 @@ func TestDirectivesWorksOnInlineFragmentUnlessFalseIncludesInlineFragment(t *tes
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -370,7 +370,7 @@ func TestDirectivesWorksOnInlineFragmentUnlessTrueIncludesInlineFragment(t *test
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -390,7 +390,7 @@ func TestDirectivesWorksOnAnonymousInlineFragmentIfFalseOmitsAnonymousInlineFrag
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -410,7 +410,7 @@ func TestDirectivesWorksOnAnonymousInlineFragmentIfTrueIncludesAnonymousInlineFr
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -431,7 +431,7 @@ func TestDirectivesWorksOnAnonymousInlineFragmentUnlessFalseIncludesAnonymousInl
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -452,7 +452,7 @@ func TestDirectivesWorksOnAnonymousInlineFragmentUnlessTrueIncludesAnonymousInli
         }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -465,7 +465,7 @@ func TestDirectivesWorksOnAnonymousInlineFragmentUnlessTrueIncludesAnonymousInli
 func TestDirectivesWorksWithSkipAndIncludeDirectives_IncludeAndNoSkip(t *testing.T) {
 	query := `{ a, b @include(if: true) @skip(if: false) }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 			"b": "b",
 		},
@@ -479,7 +479,7 @@ func TestDirectivesWorksWithSkipAndIncludeDirectives_IncludeAndNoSkip(t *testing
 func TestDirectivesWorksWithSkipAndIncludeDirectives_IncludeAndSkip(t *testing.T) {
 	query := `{ a, b @include(if: true) @skip(if: true) }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -492,7 +492,7 @@ func TestDirectivesWorksWithSkipAndIncludeDirectives_IncludeAndSkip(t *testing.T
 func TestDirectivesWorksWithSkipAndIncludeDirectives_NoIncludeAndSkip(t *testing.T) {
 	query := `{ a, b @include(if: false) @skip(if: true) }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}
@@ -505,7 +505,7 @@ func TestDirectivesWorksWithSkipAndIncludeDirectives_NoIncludeAndSkip(t *testing
 func TestDirectivesWorksWithSkipAndIncludeDirectives_NoIncludeOrSkip(t *testing.T) {
 	query := `{ a, b @include(if: false) @skip(if: false) }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "a",
 		},
 	}

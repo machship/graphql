@@ -9,13 +9,13 @@ import (
 
 var someScalarType = graphql.NewScalar(graphql.ScalarConfig{
 	Name: "SomeScalar",
-	Serialize: func(value interface{}) interface{} {
+	Serialize: func(value any) any {
 		return nil
 	},
-	ParseValue: func(value interface{}) interface{} {
+	ParseValue: func(value any) any {
 		return nil
 	},
-	ParseLiteral: func(valueAST ast.Value) interface{} {
+	ParseLiteral: func(valueAST ast.Value) any {
 		return nil
 	},
 })
@@ -325,7 +325,7 @@ func TestTypeSystem_SchemaMustContainUniquelyNamedTypes_RejectsASchemaWhichRedef
 
 	fakeString := graphql.NewScalar(graphql.ScalarConfig{
 		Name: "String",
-		Serialize: func(value interface{}) interface{} {
+		Serialize: func(value any) any {
 			return nil
 		},
 	})
@@ -843,7 +843,7 @@ func TestTypeSystem_ScalarTypesMustBeSerializable_AcceptsAScalarTypeDefiningSeri
 
 	_, err := schemaWithFieldType(graphql.NewScalar(graphql.ScalarConfig{
 		Name: "SomeScalar",
-		Serialize: func(value interface{}) interface{} {
+		Serialize: func(value any) any {
 			return nil
 		},
 	}))
@@ -867,13 +867,13 @@ func TestTypeSystem_ScalarTypesMustBeSerializable_AcceptsAScalarTypeDefiningPars
 
 	_, err := schemaWithFieldType(graphql.NewScalar(graphql.ScalarConfig{
 		Name: "SomeScalar",
-		Serialize: func(value interface{}) interface{} {
+		Serialize: func(value any) any {
 			return nil
 		},
-		ParseValue: func(value interface{}) interface{} {
+		ParseValue: func(value any) any {
 			return nil
 		},
-		ParseLiteral: func(valueAST ast.Value) interface{} {
+		ParseLiteral: func(valueAST ast.Value) any {
 			return nil
 		},
 	}))
@@ -885,10 +885,10 @@ func TestTypeSystem_ScalarTypesMustBeSerializable_RejectsAScalarTypeDefiningPars
 
 	_, err := schemaWithFieldType(graphql.NewScalar(graphql.ScalarConfig{
 		Name: "SomeScalar",
-		Serialize: func(value interface{}) interface{} {
+		Serialize: func(value any) any {
 			return nil
 		},
-		ParseValue: func(value interface{}) interface{} {
+		ParseValue: func(value any) any {
 			return nil
 		},
 	}))
@@ -901,10 +901,10 @@ func TestTypeSystem_ScalarTypesMustBeSerializable_RejectsAScalarTypeDefiningPars
 
 	_, err := schemaWithFieldType(graphql.NewScalar(graphql.ScalarConfig{
 		Name: "SomeScalar",
-		Serialize: func(value interface{}) interface{} {
+		Serialize: func(value any) any {
 			return nil
 		},
-		ParseLiteral: func(valueAST ast.Value) interface{} {
+		ParseLiteral: func(valueAST ast.Value) any {
 			return nil
 		},
 	}))

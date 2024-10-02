@@ -11,11 +11,13 @@ const TAG = "json"
 
 // can't take recursive slice type
 // e.g
-// type Person struct{
-//	Friends []Person
-// }
+//
+//	type Person struct{
+//		Friends []Person
+//	}
+//
 // it will throw panic stack-overflow
-func BindFields(obj interface{}) Fields {
+func BindFields(obj any) Fields {
 	t := reflect.TypeOf(obj)
 	v := reflect.ValueOf(obj)
 	fields := make(map[string]*Field)
@@ -70,7 +72,7 @@ func BindFields(obj interface{}) Fields {
 		}
 		fields[tag] = &Field{
 			Type: graphType,
-			Resolve: func(p ResolveParams) (interface{}, error) {
+			Resolve: func(p ResolveParams) (any, error) {
 				return extractValue(tag, p.Source), nil
 			},
 		}
@@ -125,7 +127,7 @@ func appendFields(dest, origin Fields) Fields {
 	return dest
 }
 
-func extractValue(originTag string, obj interface{}) interface{} {
+func extractValue(originTag string, obj any) any {
 	val := reflect.Indirect(reflect.ValueOf(obj))
 
 	for j := 0; j < val.NumField(); j++ {
@@ -161,7 +163,7 @@ func extractTag(tag reflect.StructTag) string {
 }
 
 // lazy way of binding args
-func BindArg(obj interface{}, tags ...string) FieldConfigArgument {
+func BindArg(obj any, tags ...string) FieldConfigArgument {
 	v := reflect.Indirect(reflect.ValueOf(obj))
 	var config = make(FieldConfigArgument)
 	for i := 0; i < v.NumField(); i++ {
@@ -177,7 +179,7 @@ func BindArg(obj interface{}, tags ...string) FieldConfigArgument {
 	return config
 }
 
-func inArray(slice interface{}, item interface{}) bool {
+func inArray(slice any, item any) bool {
 	s := reflect.ValueOf(slice)
 	if s.Kind() != reflect.Slice {
 		panic("inArray() given a non-slice type")
