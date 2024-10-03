@@ -136,10 +136,10 @@ func main() {
 					Resolve: func(p graphql.ResolveParams) (any, error) {
 						dog, dogOk := p.Args["favorite_dog"].(*NullString)
 						people := []Person{
-							Person{Name: "Alice", FavoriteDog: NewNullString("Yorkshire Terrier")},
+							{Name: "Alice", FavoriteDog: NewNullString("Yorkshire Terrier")},
 							// `Bob`'s favorite dog will be saved as null in the database
-							Person{Name: "Bob", FavoriteDog: NewNullString("")},
-							Person{Name: "Chris", FavoriteDog: NewNullString("French Bulldog")},
+							{Name: "Bob", FavoriteDog: NewNullString("")},
+							{Name: "Chris", FavoriteDog: NewNullString("French Bulldog")},
 						}
 						switch {
 						case dogOk:

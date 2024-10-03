@@ -239,14 +239,7 @@ func init() {
 				Description: "The friends of the droid, or an empty list if they have none.",
 				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if droid, ok := p.Source.(StarWarsChar); ok {
-						friends := []map[string]any{}
-						for _, friend := range droid.Friends {
-							friends = append(friends, map[string]any{
-								"name": friend.Name,
-								"id":   friend.ID,
-							})
-						}
-						return friends, nil
+						return droid.Friends, nil
 					}
 					return []any{}, nil
 				},
@@ -367,7 +360,7 @@ func TestExecute(t *testing.T, ep graphql.ExecuteParams) *graphql.Result {
 }
 
 func Diff(want, got any) []string {
-	return []string{fmt.Sprintf("\ngot: %v", got), fmt.Sprintf("\nwant: %v\n", want)}
+	return []string{fmt.Sprintf("\ngot:\n%v", got), fmt.Sprintf("\nwant:\n%v\n", want)}
 }
 
 func ASTToJSON(t *testing.T, a ast.Node) any {

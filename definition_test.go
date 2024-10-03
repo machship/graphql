@@ -719,7 +719,7 @@ func TestTypeSystem_DefinitionExample_HandlesInvalidUnionTypes(t *testing.T) {
 	})
 
 	unionTypes := someUnion.Types()
-	expected := "Unknown Union.Types type: graphql.InterfacesThunk"
+	expected := "unknown Union.Types type: graphql.InterfacesThunk"
 
 	if someUnion.Error().Error() != expected {
 		t.Fatalf("Unexpected error, got: %v, want: %v", someUnion.Error().Error(), expected)

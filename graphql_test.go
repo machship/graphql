@@ -10,6 +10,7 @@ import (
 )
 
 type T struct {
+	name      string
 	Query     string
 	Schema    graphql.Schema
 	Expected  any
@@ -38,6 +39,7 @@ func init() {
 			},
 		},
 		{
+			name: "xyz",
 			Query: `
 				query HeroNameAndFriendsQuery {
 					hero {

@@ -9,6 +9,9 @@ import (
 
 func TestRace(t *testing.T) {
 	tempdir := filepath.Join(os.TempDir(), "race")
+	if err := os.MkdirAll(tempdir, 0755); err != nil {
+		t.Fatalf("Failed to create temporary directory: %s", err)
+	}
 	defer os.RemoveAll(tempdir)
 
 	filename := filepath.Join(tempdir, "example.go")

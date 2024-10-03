@@ -514,6 +514,7 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 		ResolveType: func(p graphql.ResolveTypeParams) *graphql.Object {
 			encounteredSchema = p.Info.Schema
 			encounteredContextValue, _ = p.Context.Value("authToken").(string)
+			encounteredContextValue = testutil.ContextValue(p.Context, "authToken").(string)
 			encounteredRootValue = p.Info.RootValue.(*testPerson).Name
 			return personType2
 		},
