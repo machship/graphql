@@ -513,7 +513,6 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 		},
 		ResolveType: func(p graphql.ResolveTypeParams) *graphql.Object {
 			encounteredSchema = p.Info.Schema
-			encounteredContextValue, _ = p.Context.Value("authToken").(string)
 			encounteredContextValue = testutil.ContextValue(p.Context, "authToken").(string)
 			encounteredRootValue = p.Info.RootValue.(*testPerson).Name
 			return personType2
@@ -535,9 +534,12 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 		},
 	})
 
-	schema2, _ := graphql.NewSchema(graphql.SchemaConfig{
+	schema2, err := graphql.NewSchema(graphql.SchemaConfig{
 		Query: personType2,
 	})
+	if err != nil {
+		t.Fatalf("Unexepected error %s", err)
+	}
 
 	john2 := &testPerson{
 		Name: "John",
