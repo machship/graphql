@@ -1,3 +1,3 @@
 module github.com/machship/graphql
 
-go 1.13
+go 1.23

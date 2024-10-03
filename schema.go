@@ -16,21 +16,23 @@ type TypeMap map[string]Type
 // query, mutation (optional) and subscription (optional). A schema definition is then supplied to the
 // validator and executor.
 // Example:
-//     myAppSchema, err := NewSchema(SchemaConfig({
-//       Query: MyAppQueryRootType,
-//       Mutation: MyAppMutationRootType,
-//       Subscription: MyAppSubscriptionRootType,
-//     });
+//
+//	myAppSchema, err := NewSchema(SchemaConfig({
+//	  Query: MyAppQueryRootType,
+//	  Mutation: MyAppMutationRootType,
+//	  Subscription: MyAppSubscriptionRootType,
+//	});
+//
 // Note: If an array of `directives` are provided to GraphQLSchema, that will be
 // the exact list of directives represented and allowed. If `directives` is not
 // provided then a default set of the specified directives (e.g. @include and
 // @skip) will be used. If you wish to provide *additional* directives to these
 // specified directives, you must explicitly declare them. Example:
 //
-//     const MyAppSchema = new GraphQLSchema({
-//       ...
-//       directives: specifiedDirectives.concat([ myCustomDirective ]),
-//     })
+//	const MyAppSchema = new GraphQLSchema({
+//	  ...
+//	  directives: specifiedDirectives.concat([ myCustomDirective ]),
+//	})
 type Schema struct {
 	typeMap    TypeMap
 	directives []*Directive
@@ -92,10 +94,8 @@ func NewSchema(config SchemaConfig) (Schema, error) {
 		initialTypes = append(initialTypes, SchemaType)
 	}
 
-	for _, ttype := range config.Types {
-		// assume that user will never add a nil object to config
-		initialTypes = append(initialTypes, ttype)
-	}
+	// assume that user will never add a nil object to config
+	initialTypes = append(initialTypes, config.Types...)
 
 	for _, ttype := range initialTypes {
 		if ttype.Error() != nil {
@@ -145,8 +145,8 @@ func NewSchema(config SchemaConfig) (Schema, error) {
 	return schema, nil
 }
 
-//Added Check implementation of interfaces at runtime..
-//Add Implementations at Runtime..
+// Added Check implementation of interfaces at runtime..
+// Add Implementations at Runtime..
 func (gq *Schema) AddImplementation() error {
 
 	// Keep track of all implementations by interface name.
@@ -181,8 +181,8 @@ func (gq *Schema) AddImplementation() error {
 	return nil
 }
 
-//Edited. To check add Types at RunTime..
-//Append Runtime schema to typeMap
+// Edited. To check add Types at RunTime..
+// Append Runtime schema to typeMap
 func (gq *Schema) AppendType(objectType Type) error {
 	if objectType.Error() != nil {
 		return objectType.Error()
@@ -246,8 +246,8 @@ func (gq *Schema) IsPossibleType(abstractType Abstract, possibleType *Object) bo
 		possibleTypeMap = map[string]map[string]bool{}
 	}
 
-	if typeMap, ok := possibleTypeMap[abstractType.Name()]; !ok {
-		typeMap = map[string]bool{}
+	if _, ok := possibleTypeMap[abstractType.Name()]; !ok {
+		typeMap := map[string]bool{}
 		for _, possibleType := range gq.PossibleTypes(abstractType) {
 			typeMap[possibleType.Name()] = true
 		}
@@ -256,7 +256,7 @@ func (gq *Schema) IsPossibleType(abstractType Abstract, possibleType *Object) bo
 
 	gq.possibleTypeMap = possibleTypeMap
 	if typeMap, ok := possibleTypeMap[abstractType.Name()]; ok {
-		isPossible, _ := typeMap[possibleType.Name()]
+		isPossible := typeMap[possibleType.Name()]
 		return isPossible
 	}
 	return false

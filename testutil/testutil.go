@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -157,7 +158,7 @@ func init() {
 			"id": &graphql.Field{
 				Type:        graphql.NewNonNull(graphql.String),
 				Description: "The id of the human.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if human, ok := p.Source.(StarWarsChar); ok {
 						return human.ID, nil
 					}
@@ -167,7 +168,7 @@ func init() {
 			"name": &graphql.Field{
 				Type:        graphql.String,
 				Description: "The name of the human.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if human, ok := p.Source.(StarWarsChar); ok {
 						return human.Name, nil
 					}
@@ -177,17 +178,17 @@ func init() {
 			"friends": &graphql.Field{
 				Type:        graphql.NewList(characterInterface),
 				Description: "The friends of the human, or an empty list if they have none.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if human, ok := p.Source.(StarWarsChar); ok {
 						return human.Friends, nil
 					}
-					return []interface{}{}, nil
+					return []any{}, nil
 				},
 			},
 			"appearsIn": &graphql.Field{
 				Type:        graphql.NewList(episodeEnum),
 				Description: "Which movies they appear in.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if human, ok := p.Source.(StarWarsChar); ok {
 						return human.AppearsIn, nil
 					}
@@ -197,7 +198,7 @@ func init() {
 			"homePlanet": &graphql.Field{
 				Type:        graphql.String,
 				Description: "The home planet of the human, or null if unknown.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if human, ok := p.Source.(StarWarsChar); ok {
 						return human.HomePlanet, nil
 					}
@@ -216,7 +217,7 @@ func init() {
 			"id": &graphql.Field{
 				Type:        graphql.NewNonNull(graphql.String),
 				Description: "The id of the droid.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if droid, ok := p.Source.(StarWarsChar); ok {
 						return droid.ID, nil
 					}
@@ -226,7 +227,7 @@ func init() {
 			"name": &graphql.Field{
 				Type:        graphql.String,
 				Description: "The name of the droid.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if droid, ok := p.Source.(StarWarsChar); ok {
 						return droid.Name, nil
 					}
@@ -236,24 +237,17 @@ func init() {
 			"friends": &graphql.Field{
 				Type:        graphql.NewList(characterInterface),
 				Description: "The friends of the droid, or an empty list if they have none.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if droid, ok := p.Source.(StarWarsChar); ok {
-						friends := []map[string]interface{}{}
-						for _, friend := range droid.Friends {
-							friends = append(friends, map[string]interface{}{
-								"name": friend.Name,
-								"id":   friend.ID,
-							})
-						}
 						return droid.Friends, nil
 					}
-					return []interface{}{}, nil
+					return []any{}, nil
 				},
 			},
 			"appearsIn": &graphql.Field{
 				Type:        graphql.NewList(episodeEnum),
 				Description: "Which movies they appear in.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if droid, ok := p.Source.(StarWarsChar); ok {
 						return droid.AppearsIn, nil
 					}
@@ -263,7 +257,7 @@ func init() {
 			"primaryFunction": &graphql.Field{
 				Type:        graphql.String,
 				Description: "The primary function of the droid.",
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					if droid, ok := p.Source.(StarWarsChar); ok {
 						return droid.PrimaryFunction, nil
 					}
@@ -288,7 +282,7 @@ func init() {
 						Type: episodeEnum,
 					},
 				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					return GetHero(p.Args["episode"]), nil
 				},
 			},
@@ -300,7 +294,7 @@ func init() {
 						Type:        graphql.NewNonNull(graphql.String),
 					},
 				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					id, err := strconv.Atoi(p.Args["id"].(string))
 					if err != nil {
 						return nil, err
@@ -316,7 +310,7 @@ func init() {
 						Type:        graphql.NewNonNull(graphql.String),
 					},
 				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				Resolve: func(p graphql.ResolveParams) (any, error) {
 					return GetDroid(p.Args["id"].(int)), nil
 				},
 			},
@@ -339,7 +333,7 @@ func GetDroid(id int) StarWarsChar {
 	}
 	return StarWarsChar{}
 }
-func GetHero(episode interface{}) interface{} {
+func GetHero(episode any) any {
 	if episode == 5 {
 		return Luke
 	}
@@ -365,16 +359,16 @@ func TestExecute(t *testing.T, ep graphql.ExecuteParams) *graphql.Result {
 	return graphql.Execute(ep)
 }
 
-func Diff(want, got interface{}) []string {
-	return []string{fmt.Sprintf("\ngot: %v", got), fmt.Sprintf("\nwant: %v\n", want)}
+func Diff(want, got any) []string {
+	return []string{fmt.Sprintf("\ngot:\n%v", got), fmt.Sprintf("\nwant:\n%v\n", want)}
 }
 
-func ASTToJSON(t *testing.T, a ast.Node) interface{} {
+func ASTToJSON(t *testing.T, a ast.Node) any {
 	b, err := json.Marshal(a)
 	if err != nil {
 		t.Fatalf("Failed to marshal Node %v", err)
 	}
-	var f interface{}
+	var f any
 	err = json.Unmarshal(b, &f)
 	if err != nil {
 		t.Fatalf("Failed to unmarshal Node %v", err)
@@ -382,7 +376,7 @@ func ASTToJSON(t *testing.T, a ast.Node) interface{} {
 	return f
 }
 
-func ContainSubsetSlice(super []interface{}, sub []interface{}) bool {
+func ContainSubsetSlice(super []any, sub []any) bool {
 	if len(sub) == 0 {
 		return true
 	}
@@ -391,8 +385,8 @@ subLoop:
 		found := false
 	innerLoop:
 		for _, superVal := range super {
-			if subVal, ok := subVal.(map[string]interface{}); ok {
-				if superVal, ok := superVal.(map[string]interface{}); ok {
+			if subVal, ok := subVal.(map[string]any); ok {
+				if superVal, ok := superVal.(map[string]any); ok {
 					if ContainSubset(superVal, subVal) {
 						found = true
 						break innerLoop
@@ -404,8 +398,8 @@ subLoop:
 				}
 
 			}
-			if subVal, ok := subVal.([]interface{}); ok {
-				if superVal, ok := superVal.([]interface{}); ok {
+			if subVal, ok := subVal.([]any); ok {
+				if superVal, ok := superVal.([]any); ok {
 					if ContainSubsetSlice(superVal, subVal) {
 						found = true
 						break innerLoop
@@ -429,23 +423,23 @@ subLoop:
 	return true
 }
 
-func ContainSubset(super map[string]interface{}, sub map[string]interface{}) bool {
+func ContainSubset(super map[string]any, sub map[string]any) bool {
 	if len(sub) == 0 {
 		return true
 	}
 	for subKey, subVal := range sub {
 		if superVal, ok := super[subKey]; ok {
 			switch superVal := superVal.(type) {
-			case []interface{}:
-				if subVal, ok := subVal.([]interface{}); ok {
+			case []any:
+				if subVal, ok := subVal.([]any); ok {
 					if !ContainSubsetSlice(superVal, subVal) {
 						return false
 					}
 				} else {
 					return false
 				}
-			case map[string]interface{}:
-				if subVal, ok := subVal.(map[string]interface{}); ok {
+			case map[string]any:
+				if subVal, ok := subVal.(map[string]any); ok {
 					if !ContainSubset(superVal, subVal) {
 						return false
 					}
@@ -501,4 +495,17 @@ func EqualResults(expected, result *graphql.Result) bool {
 		return false
 	}
 	return EqualFormattedErrors(expected.Errors, result.Errors)
+}
+
+// testCtxKey is a type to avoid key collisions in context values.
+type testCtxKey string
+
+// ContextWithValue inserts value into the context.
+func ContextWithValue(ctx context.Context, k string, v any) context.Context {
+	return context.WithValue(ctx, testCtxKey(k), v)
+}
+
+// ContextValue retrieves a value from the context.
+func ContextValue(ctx context.Context, k string) any {
+	return ctx.Value(testCtxKey(k))
 }

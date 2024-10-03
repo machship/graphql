@@ -10,10 +10,11 @@ import (
 )
 
 type T struct {
+	name      string
 	Query     string
 	Schema    graphql.Schema
-	Expected  interface{}
-	Variables map[string]interface{}
+	Expected  any
+	Variables map[string]any
 }
 
 var Tests = []T{}
@@ -30,14 +31,15 @@ func init() {
 			`,
 			Schema: testutil.StarWarsSchema,
 			Expected: &graphql.Result{
-				Data: map[string]interface{}{
-					"hero": map[string]interface{}{
+				Data: map[string]any{
+					"hero": map[string]any{
 						"name": "R2-D2",
 					},
 				},
 			},
 		},
 		{
+			name: "xyz",
 			Query: `
 				query HeroNameAndFriendsQuery {
 					hero {
@@ -51,18 +53,18 @@ func init() {
 			`,
 			Schema: testutil.StarWarsSchema,
 			Expected: &graphql.Result{
-				Data: map[string]interface{}{
-					"hero": map[string]interface{}{
+				Data: map[string]any{
+					"hero": map[string]any{
 						"id":   "2001",
 						"name": "R2-D2",
-						"friends": []interface{}{
-							map[string]interface{}{
+						"friends": []any{
+							map[string]any{
 								"name": "Luke Skywalker",
 							},
-							map[string]interface{}{
+							map[string]any{
 								"name": "Han Solo",
 							},
-							map[string]interface{}{
+							map[string]any{
 								"name": "Leia Organa",
 							},
 						},
@@ -80,13 +82,13 @@ func init() {
 			`,
 			Schema: testutil.StarWarsSchema,
 			Expected: &graphql.Result{
-				Data: map[string]interface{}{
-					"human": map[string]interface{}{
+				Data: map[string]any{
+					"human": map[string]any{
 						"name": "Darth Vader",
 					},
 				},
 			},
-			Variables: map[string]interface{}{
+			Variables: map[string]any{
 				"id": "1001",
 			},
 		},
@@ -117,7 +119,7 @@ func testGraphql(test T, p graphql.Params, t *testing.T) {
 func TestBasicGraphQLExample(t *testing.T) {
 	// taken from `graphql-js` README
 
-	helloFieldResolved := func(p graphql.ResolveParams) (interface{}, error) {
+	helloFieldResolved := func(p graphql.ResolveParams) (any, error) {
 		return "world", nil
 	}
 
@@ -137,8 +139,7 @@ func TestBasicGraphQLExample(t *testing.T) {
 		t.Fatalf("wrong result, unexpected errors: %v", err.Error())
 	}
 	query := "{ hello }"
-	var expected interface{}
-	expected = map[string]interface{}{
+	var expected any = map[string]any{
 		"hello": "world",
 	}
 
@@ -156,8 +157,8 @@ func TestBasicGraphQLExample(t *testing.T) {
 }
 
 func TestThreadsContextFromParamsThrough(t *testing.T) {
-	extractFieldFromContextFn := func(p graphql.ResolveParams) (interface{}, error) {
-		return p.Context.Value(p.Args["key"]), nil
+	extractFieldFromContextFn := func(p graphql.ResolveParams) (any, error) {
+		return testutil.ContextValue(p.Context, p.Args["key"].(string)), nil
 	}
 
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
@@ -182,12 +183,12 @@ func TestThreadsContextFromParamsThrough(t *testing.T) {
 	result := graphql.Do(graphql.Params{
 		Schema:        schema,
 		RequestString: query,
-		Context:       context.WithValue(context.TODO(), "a", "xyz"),
+		Context:       testutil.ContextWithValue(context.Background(), "a", "xyz"),
 	})
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	expected := map[string]interface{}{"value": "xyz"}
+	expected := map[string]any{"value": "xyz"}
 	if !reflect.DeepEqual(result.Data, expected) {
 		t.Fatalf("wrong result, query: %v, graphql result diff: %v", query, testutil.Diff(expected, result))
 	}
@@ -201,7 +202,7 @@ func TestNewErrorChecksNilNodes(t *testing.T) {
 			Fields: graphql.Fields{
 				"graphql_is": &graphql.Field{
 					Type: graphql.String,
-					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					Resolve: func(p graphql.ResolveParams) (any, error) {
 						return "", nil
 					},
 				},
@@ -222,14 +223,14 @@ func TestNewErrorChecksNilNodes(t *testing.T) {
 }
 
 func TestEmptyStringIsNotNull(t *testing.T) {
-	checkForEmptyString := func(p graphql.ResolveParams) (interface{}, error) {
+	checkForEmptyString := func(p graphql.ResolveParams) (any, error) {
 		arg := p.Args["arg"]
 		if arg == nil || arg.(string) != "" {
 			t.Errorf("Expected empty string for input arg, got %#v", arg)
 		}
 		return "yay", nil
 	}
-	returnEmptyString := func(p graphql.ResolveParams) (interface{}, error) {
+	returnEmptyString := func(p graphql.ResolveParams) (any, error) {
 		return "", nil
 	}
 
@@ -263,7 +264,7 @@ func TestEmptyStringIsNotNull(t *testing.T) {
 	if len(result.Errors) > 0 {
 		t.Fatalf("wrong result, unexpected errors: %v", result.Errors)
 	}
-	expected := map[string]interface{}{"checkEmptyArg": "yay", "checkEmptyResult": ""}
+	expected := map[string]any{"checkEmptyArg": "yay", "checkEmptyResult": ""}
 	if !reflect.DeepEqual(result.Data, expected) {
 		t.Errorf("wrong result, query: %v, graphql result diff: %v", query, testutil.Diff(expected, result))
 	}

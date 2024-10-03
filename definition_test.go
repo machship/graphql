@@ -155,7 +155,7 @@ func TestTypeSystem_DefinitionExample_DefinesAQueryOnlySchema(t *testing.T) {
 		t.Fatalf("expected blogSchema.GetQueryType() == blogQuery")
 	}
 
-	articleField, _ := blogQuery.Fields()["article"]
+	articleField := blogQuery.Fields()["article"]
 	if articleField == nil {
 		t.Fatalf("articleField is nil")
 	}
@@ -232,7 +232,7 @@ func TestTypeSystem_DefinitionExample_DefinesAMutationScheme(t *testing.T) {
 		t.Fatalf("expected blogSchema.GetMutationType() == blogMutation")
 	}
 
-	writeMutation, _ := blogMutation.Fields()["writeArticle"]
+	writeMutation := blogMutation.Fields()["writeArticle"]
 	if writeMutation == nil {
 		t.Fatalf("writeMutation is nil")
 	}
@@ -261,7 +261,7 @@ func TestTypeSystem_DefinitionExample_DefinesASubscriptionScheme(t *testing.T) {
 		t.Fatalf("expected blogSchema.SubscriptionType() == blogSubscription")
 	}
 
-	subMutation, _ := blogSubscription.Fields()["articleSubscribe"]
+	subMutation := blogSubscription.Fields()["articleSubscribe"]
 	if subMutation == nil {
 		t.Fatalf("subMutation is nil")
 	}
@@ -719,7 +719,7 @@ func TestTypeSystem_DefinitionExample_HandlesInvalidUnionTypes(t *testing.T) {
 	})
 
 	unionTypes := someUnion.Types()
-	expected := "Unknown Union.Types type: graphql.InterfacesThunk"
+	expected := "unknown Union.Types type: graphql.InterfacesThunk"
 
 	if someUnion.Error().Error() != expected {
 		t.Fatalf("Unexpected error, got: %v, want: %v", someUnion.Error().Error(), expected)

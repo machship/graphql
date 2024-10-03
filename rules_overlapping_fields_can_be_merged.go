@@ -18,7 +18,7 @@ func fieldsConflictMessage(responseName string, reason conflictReason) string {
 	)
 }
 
-func fieldsConflictReasonMessage(message interface{}) string {
+func fieldsConflictReasonMessage(message any) string {
 	switch reason := message.(type) {
 	case string:
 		return reason
@@ -58,7 +58,7 @@ func OverlappingFieldsCanBeMergedRule(context *ValidationContext) *ValidationRul
 	visitorOpts := &visitor.VisitorOptions{
 		KindFuncMap: map[string]visitor.NamedVisitFuncs{
 			kinds.SelectionSet: {
-				Kind: func(p visitor.VisitFuncParams) (string, interface{}) {
+				Kind: func(p visitor.VisitFuncParams) (string, any) {
 					if selectionSet, ok := p.Node.(*ast.SelectionSet); ok && selectionSet != nil {
 						parentType, _ := context.ParentType().(Named)
 
@@ -468,10 +468,10 @@ func (rule *overlappingFieldsCanBeMergedRule) getFieldsAndFragmentNames(parentTy
 				}
 				var fieldDef *FieldDefinition
 				if parentType, ok := parentType.(*Object); ok && parentType != nil {
-					fieldDef, _ = parentType.Fields()[fieldName]
+					fieldDef = parentType.Fields()[fieldName]
 				}
 				if parentType, ok := parentType.(*Interface); ok && parentType != nil {
-					fieldDef, _ = parentType.Fields()[fieldName]
+					fieldDef = parentType.Fields()[fieldName]
 				}
 
 				responseName := fieldName
@@ -539,7 +539,7 @@ func (rule *overlappingFieldsCanBeMergedRule) getReferencedFieldsAndFragmentName
 
 type conflictReason struct {
 	Name    string
-	Message interface{} // conflictReason || []conflictReason
+	Message any // conflictReason || []conflictReason
 }
 type conflict struct {
 	Reason      conflictReason
@@ -586,7 +586,7 @@ func (pair *pairSet) Has(a string, b string, areMutuallyExclusive bool) bool {
 	// hence if we want to know if this PairSet "has" these two with no
 	// exclusivity, we have to ensure it was added as such.
 	if !areMutuallyExclusive {
-		return res == false
+		return !res
 	}
 	return true
 }
@@ -629,7 +629,7 @@ func sameArguments(args1 []*ast.Argument, args2 []*ast.Argument) bool {
 		if foundArgs2 == nil {
 			return false
 		}
-		if sameValue(arg1.Value, foundArgs2.Value) == false {
+		if !sameValue(arg1.Value, foundArgs2.Value) {
 			return false
 		}
 	}

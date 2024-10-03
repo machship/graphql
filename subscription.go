@@ -13,9 +13,9 @@ import (
 type SubscribeParams struct {
 	Schema        Schema
 	RequestString string
-	RootValue     interface{}
+	RootValue     any
 	// ContextValue    context.Context
-	VariableValues  map[string]interface{}
+	VariableValues  map[string]any
 	OperationName   string
 	FieldResolver   FieldResolveFn
 	FieldSubscriber FieldResolveFn
@@ -78,7 +78,7 @@ func ExecuteSubscription(p ExecuteParams) chan *Result {
 		p.Context = context.Background()
 	}
 
-	var mapSourceToResponse = func(payload interface{}) *Result {
+	var mapSourceToResponse = func(payload any) *Result {
 		return Execute(ExecuteParams{
 			Schema:        p.Schema,
 			Root:          payload,
@@ -101,7 +101,6 @@ func ExecuteSubscription(p ExecuteParams) chan *Result {
 					Errors: gqlerrors.FormatErrors(e),
 				}
 			}
-			return
 		}()
 
 		exeContext, err := buildExecutionContext(buildExecutionCtxParams{
@@ -202,15 +201,14 @@ func ExecuteSubscription(p ExecuteParams) chan *Result {
 			return
 		}
 
-		switch fieldResult.(type) {
-		case chan interface{}:
-			sub := fieldResult.(chan interface{})
+		switch v := fieldResult.(type) {
+		case chan any:
 			for {
 				select {
 				case <-p.Context.Done():
 					return
 
-				case res, more := <-sub:
+				case res, more := <-v:
 					if !more {
 						return
 					}

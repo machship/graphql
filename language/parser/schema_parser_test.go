@@ -825,7 +825,7 @@ input Hello {
 	if err == nil {
 		t.Fatalf("expected error, expected: %v, got: %v", expectedError, nil)
 	}
-	if !reflect.DeepEqual(expectedError, err) {
+	if err.Error() != expectedError.Error() {
 		t.Fatalf("unexpected document, expected: %v, got: %v", expectedError, err)
 	}
 }

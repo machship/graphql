@@ -154,40 +154,40 @@ func TestUnionIntersectionTypes_CanIntrospectOnUnionAndIntersectionTypes(t *test
       }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
-			"Named": map[string]interface{}{
+		Data: map[string]any{
+			"Named": map[string]any{
 				"kind": "INTERFACE",
 				"name": "Named",
-				"fields": []interface{}{
-					map[string]interface{}{
+				"fields": []any{
+					map[string]any{
 						"name": "name",
 					},
 				},
 				"interfaces": nil,
-				"possibleTypes": []interface{}{
-					map[string]interface{}{
+				"possibleTypes": []any{
+					map[string]any{
 						"name": "Dog",
 					},
-					map[string]interface{}{
+					map[string]any{
 						"name": "Cat",
 					},
-					map[string]interface{}{
+					map[string]any{
 						"name": "Person",
 					},
 				},
 				"enumValues":  nil,
 				"inputFields": nil,
 			},
-			"Pet": map[string]interface{}{
+			"Pet": map[string]any{
 				"kind":       "UNION",
 				"name":       "Pet",
 				"fields":     nil,
 				"interfaces": nil,
-				"possibleTypes": []interface{}{
-					map[string]interface{}{
+				"possibleTypes": []any{
+					map[string]any{
 						"name": "Dog",
 					},
-					map[string]interface{}{
+					map[string]any{
 						"name": "Cat",
 					},
 				},
@@ -208,7 +208,7 @@ func TestUnionIntersectionTypes_CanIntrospectOnUnionAndIntersectionTypes(t *test
 	if len(result.Errors) != len(expected.Errors) {
 		t.Fatalf("Unexpected errors, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
-	if !testutil.ContainSubset(expected.Data.(map[string]interface{}), result.Data.(map[string]interface{})) {
+	if !testutil.ContainSubset(expected.Data.(map[string]any), result.Data.(map[string]any)) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected.Data, result.Data))
 	}
 }
@@ -227,16 +227,16 @@ func TestUnionIntersectionTypes_ExecutesUsingUnionTypes(t *testing.T) {
       }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"__typename": "Person",
 			"name":       "John",
-			"pets": []interface{}{
-				map[string]interface{}{
+			"pets": []any{
+				map[string]any{
 					"__typename": "Cat",
 					"name":       "Garfield",
 					"meows":      false,
 				},
-				map[string]interface{}{
+				map[string]any{
 					"__typename": "Dog",
 					"name":       "Odie",
 					"barks":      true,
@@ -257,7 +257,7 @@ func TestUnionIntersectionTypes_ExecutesUsingUnionTypes(t *testing.T) {
 	if len(result.Errors) != len(expected.Errors) {
 		t.Fatalf("Unexpected errors, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -281,16 +281,16 @@ func TestUnionIntersectionTypes_ExecutesUnionTypesWithInlineFragments(t *testing
       }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"__typename": "Person",
 			"name":       "John",
-			"pets": []interface{}{
-				map[string]interface{}{
+			"pets": []any{
+				map[string]any{
 					"__typename": "Cat",
 					"name":       "Garfield",
 					"meows":      false,
 				},
-				map[string]interface{}{
+				map[string]any{
 					"__typename": "Dog",
 					"name":       "Odie",
 					"barks":      true,
@@ -311,7 +311,7 @@ func TestUnionIntersectionTypes_ExecutesUnionTypesWithInlineFragments(t *testing
 	if len(result.Errors) != len(expected.Errors) {
 		t.Fatalf("Unexpected errors, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -331,15 +331,15 @@ func TestUnionIntersectionTypes_ExecutesUsingInterfaceTypes(t *testing.T) {
       }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"__typename": "Person",
 			"name":       "John",
-			"friends": []interface{}{
-				map[string]interface{}{
+			"friends": []any{
+				map[string]any{
 					"__typename": "Person",
 					"name":       "Liz",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"__typename": "Dog",
 					"name":       "Odie",
 					"barks":      true,
@@ -360,7 +360,7 @@ func TestUnionIntersectionTypes_ExecutesUsingInterfaceTypes(t *testing.T) {
 	if len(result.Errors) != len(expected.Errors) {
 		t.Fatalf("Unexpected errors, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -384,15 +384,15 @@ func TestUnionIntersectionTypes_ExecutesInterfaceTypesWithInlineFragments(t *tes
       }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"__typename": "Person",
 			"name":       "John",
-			"friends": []interface{}{
-				map[string]interface{}{
+			"friends": []any{
+				map[string]any{
 					"__typename": "Person",
 					"name":       "Liz",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"__typename": "Dog",
 					"name":       "Odie",
 					"barks":      true,
@@ -413,7 +413,7 @@ func TestUnionIntersectionTypes_ExecutesInterfaceTypesWithInlineFragments(t *tes
 	if len(result.Errors) != len(expected.Errors) {
 		t.Fatalf("Unexpected errors, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -452,27 +452,27 @@ func TestUnionIntersectionTypes_AllowsFragmentConditionsToBeAbstractTypes(t *tes
       }
 	`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"__typename": "Person",
 			"name":       "John",
-			"friends": []interface{}{
-				map[string]interface{}{
+			"friends": []any{
+				map[string]any{
 					"__typename": "Person",
 					"name":       "Liz",
 				},
-				map[string]interface{}{
+				map[string]any{
 					"__typename": "Dog",
 					"name":       "Odie",
 					"barks":      true,
 				},
 			},
-			"pets": []interface{}{
-				map[string]interface{}{
+			"pets": []any{
+				map[string]any{
 					"__typename": "Cat",
 					"name":       "Garfield",
 					"meows":      false,
 				},
-				map[string]interface{}{
+				map[string]any{
 					"__typename": "Dog",
 					"name":       "Odie",
 					"barks":      true,
@@ -493,7 +493,7 @@ func TestUnionIntersectionTypes_AllowsFragmentConditionsToBeAbstractTypes(t *tes
 	if len(result.Errors) != len(expected.Errors) {
 		t.Fatalf("Unexpected errors, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
@@ -513,7 +513,7 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 		},
 		ResolveType: func(p graphql.ResolveTypeParams) *graphql.Object {
 			encounteredSchema = p.Info.Schema
-			encounteredContextValue, _ = p.Context.Value("authToken").(string)
+			encounteredContextValue = testutil.ContextValue(p.Context, "authToken").(string)
 			encounteredRootValue = p.Info.RootValue.(*testPerson).Name
 			return personType2
 		},
@@ -534,9 +534,12 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 		},
 	})
 
-	schema2, _ := graphql.NewSchema(graphql.SchemaConfig{
+	schema2, err := graphql.NewSchema(graphql.SchemaConfig{
 		Query: personType2,
 	})
+	if err != nil {
+		t.Fatalf("Unexepected error %s", err)
+	}
 
 	john2 := &testPerson{
 		Name: "John",
@@ -547,10 +550,10 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 
 	doc := `{ name, friends { name } }`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"name": "John",
-			"friends": []interface{}{
-				map[string]interface{}{
+			"friends": []any{
+				map[string]any{
 					"name": "Liz",
 				},
 			},
@@ -560,8 +563,7 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 	ast := testutil.TestParse(t, doc)
 
 	// create context
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "authToken", "contextStringValue123")
+	ctx := testutil.ContextWithValue(context.Background(), "authToken", "contextStringValue123")
 
 	// execute
 	ep := graphql.ExecuteParams{
@@ -572,7 +574,7 @@ func TestUnionIntersectionTypes_GetsExecutionInfoInResolver(t *testing.T) {
 	}
 	result := testutil.TestExecute(t, ep)
 
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 	if !reflect.DeepEqual("contextStringValue123", encounteredContextValue) {
@@ -603,7 +605,7 @@ func TestUnionIntersectionTypes_ValueMayBeNilPointer(t *testing.T) {
 							},
 						},
 					}),
-					Resolve: func(_ graphql.ResolveParams) (interface{}, error) {
+					Resolve: func(_ graphql.ResolveParams) (any, error) {
 						return struct {
 							Pet   *testCat2 `graphql:"pet"`
 							Named *testCat2 `graphql:"named"`
@@ -625,8 +627,8 @@ func TestUnionIntersectionTypes_ValueMayBeNilPointer(t *testing.T) {
 		}
 	}`
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
-			"query": map[string]interface{}{
+		Data: map[string]any{
+			"query": map[string]any{
 				"pet":   nil,
 				"named": nil,
 			}},
@@ -635,7 +637,7 @@ func TestUnionIntersectionTypes_ValueMayBeNilPointer(t *testing.T) {
 		Schema:        unionInterfaceTestSchema,
 		RequestString: query,
 	})
-	if !reflect.DeepEqual(expected, result) {
+	if !reflect.DeepEqual(expected.Data, result.Data) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }

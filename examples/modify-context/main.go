@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/machship/graphql"
+	"github.com/machship/graphql/testutil"
 )
 
 type User struct {
@@ -18,8 +19,8 @@ var UserType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"id": &graphql.Field{
 			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				rootValue := p.Info.RootValue.(map[string]interface{})
+			Resolve: func(p graphql.ResolveParams) (any, error) {
+				rootValue := p.Info.RootValue.(map[string]any)
 				if rootValue["data-from-parent"] == "ok" &&
 					rootValue["data-before-execution"] == "ok" {
 					user := p.Source.(User)
@@ -38,11 +39,11 @@ func main() {
 			Fields: graphql.Fields{
 				"users": &graphql.Field{
 					Type: graphql.NewList(UserType),
-					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-						rootValue := p.Info.RootValue.(map[string]interface{})
+					Resolve: func(p graphql.ResolveParams) (any, error) {
+						rootValue := p.Info.RootValue.(map[string]any)
 						rootValue["data-from-parent"] = "ok"
 						result := []User{
-							User{ID: 1},
+							{ID: 1},
 						}
 						return result, nil
 
@@ -54,11 +55,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx := context.WithValue(context.Background(), "currentUser", User{ID: 100})
+	ctx := testutil.ContextWithValue(context.Background(), "currentUser", User{ID: 100})
 	// Instead of trying to modify context within a resolve function, use:
 	// `graphql.Params.RootObject` is a mutable optional variable and available on
 	// each resolve function via: `graphql.ResolveParams.Info.RootValue`.
-	rootObject := map[string]interface{}{
+	rootObject := map[string]any{
 		"data-before-execution": "ok",
 	}
 	result := graphql.Do(graphql.Params{

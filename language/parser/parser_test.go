@@ -2,7 +2,7 @@ package parser
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -347,7 +347,7 @@ func TestParsesMultiByteCharacters_UnicodeText(t *testing.T) {
 }
 
 func TestParsesKitchenSink(t *testing.T) {
-	b, err := ioutil.ReadFile("../../kitchen-sink.graphql")
+	b, err := os.ReadFile("../../kitchen-sink.graphql")
 	if err != nil {
 		t.Fatalf("unable to load kitchen-sink.graphql")
 	}
@@ -746,7 +746,7 @@ func TestDoesNotAcceptStringAsDefinition(t *testing.T) {
 }
 
 type errorMessageTest struct {
-	source          interface{}
+	source          any
 	expectedMessage string
 	skipped         bool
 }

@@ -19,13 +19,13 @@ func tinit(t *testing.T) graphql.Schema {
 			Fields: graphql.Fields{
 				"a": &graphql.Field{
 					Type: graphql.String,
-					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					Resolve: func(p graphql.ResolveParams) (any, error) {
 						return "foo", nil
 					},
 				},
 				"erred": &graphql.Field{
 					Type: graphql.String,
-					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					Resolve: func(p graphql.ResolveParams) (any, error) {
 						return "", errors.New("ooops")
 					},
 				},
@@ -56,14 +56,14 @@ func TestExtensionInitPanic(t *testing.T) {
 		RequestString: query,
 	})
 
-	expected := &graphql.Result{
-		Data: nil,
-		Errors: []gqlerrors.FormattedError{
-			gqlerrors.FormatError(fmt.Errorf("%s.Init: %v", ext.Name(), errors.New("test error"))),
-		},
+	expectedErrors := []gqlerrors.FormattedError{
+		gqlerrors.FormatError(fmt.Errorf("%s.Init: %v", ext.Name(), errors.New("test error"))),
 	}
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	if result.Data != nil {
+		t.Fatalf("Unexpected result, Data: %v", result)
+	}
+	if !testutil.EqualFormattedErrors(expectedErrors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expectedErrors, result.Errors))
 	}
 }
 
@@ -87,14 +87,14 @@ func TestExtensionParseDidStartPanic(t *testing.T) {
 		RequestString: query,
 	})
 
-	expected := &graphql.Result{
-		Data: nil,
-		Errors: []gqlerrors.FormattedError{
-			gqlerrors.FormatError(fmt.Errorf("%s.ParseDidStart: %v", ext.Name(), errors.New("test error"))),
-		},
+	if result.Data != nil {
+		t.Fatalf("Unexpected result, Data: %v", result)
 	}
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	expectedErrors := []gqlerrors.FormattedError{
+		gqlerrors.FormatError(fmt.Errorf("%s.ParseDidStart: %v", ext.Name(), errors.New("test error"))),
+	}
+	if !testutil.EqualFormattedErrors(expectedErrors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expectedErrors, result.Errors))
 	}
 }
 
@@ -115,14 +115,14 @@ func TestExtensionParseFinishFuncPanic(t *testing.T) {
 		RequestString: query,
 	})
 
-	expected := &graphql.Result{
-		Data: nil,
-		Errors: []gqlerrors.FormattedError{
-			gqlerrors.FormatError(fmt.Errorf("%s.ParseFinishFunc: %v", ext.Name(), errors.New("test error"))),
-		},
+	if result.Data != nil {
+		t.Fatalf("Unexpected result, Data: %v", result)
 	}
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	expectedErrors := []gqlerrors.FormattedError{
+		gqlerrors.FormatError(fmt.Errorf("%s.ParseFinishFunc: %v", ext.Name(), errors.New("test error"))),
+	}
+	if !testutil.EqualFormattedErrors(expectedErrors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expectedErrors, result.Errors))
 	}
 }
 
@@ -146,14 +146,14 @@ func TestExtensionValidationDidStartPanic(t *testing.T) {
 		RequestString: query,
 	})
 
-	expected := &graphql.Result{
-		Data: nil,
-		Errors: []gqlerrors.FormattedError{
-			gqlerrors.FormatError(fmt.Errorf("%s.ValidationDidStart: %v", ext.Name(), errors.New("test error"))),
-		},
+	if result.Data != nil {
+		t.Fatalf("Unexpected result, Data: %v", result)
 	}
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	expectedErrors := []gqlerrors.FormattedError{
+		gqlerrors.FormatError(fmt.Errorf("%s.ValidationDidStart: %v", ext.Name(), errors.New("test error"))),
+	}
+	if !testutil.EqualFormattedErrors(expectedErrors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expectedErrors, result.Errors))
 	}
 }
 
@@ -174,14 +174,14 @@ func TestExtensionValidationFinishFuncPanic(t *testing.T) {
 		RequestString: query,
 	})
 
-	expected := &graphql.Result{
-		Data: nil,
-		Errors: []gqlerrors.FormattedError{
-			gqlerrors.FormatError(fmt.Errorf("%s.ValidationFinishFunc: %v", ext.Name(), errors.New("test error"))),
-		},
+	if result.Data != nil {
+		t.Fatalf("Unexpected result, Data: %v", result)
 	}
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	expectedErrors := []gqlerrors.FormattedError{
+		gqlerrors.FormatError(fmt.Errorf("%s.ValidationFinishFunc: %v", ext.Name(), errors.New("test error"))),
+	}
+	if !testutil.EqualFormattedErrors(expectedErrors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expectedErrors, result.Errors))
 	}
 }
 
@@ -205,14 +205,14 @@ func TestExtensionExecutionDidStartPanic(t *testing.T) {
 		RequestString: query,
 	})
 
-	expected := &graphql.Result{
-		Data: nil,
-		Errors: []gqlerrors.FormattedError{
-			gqlerrors.FormatError(fmt.Errorf("%s.ExecutionDidStart: %v", ext.Name(), errors.New("test error"))),
-		},
+	if result.Data != nil {
+		t.Fatalf("Unexpected result, Data: %v", result)
 	}
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	expectedErrors := []gqlerrors.FormattedError{
+		gqlerrors.FormatError(fmt.Errorf("%s.ExecutionDidStart: %v", ext.Name(), errors.New("test error"))),
+	}
+	if !testutil.EqualFormattedErrors(expectedErrors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expectedErrors, result.Errors))
 	}
 }
 
@@ -234,7 +234,7 @@ func TestExtensionExecutionFinishFuncPanic(t *testing.T) {
 	})
 
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "foo",
 		},
 		Errors: []gqlerrors.FormattedError{
@@ -242,8 +242,11 @@ func TestExtensionExecutionFinishFuncPanic(t *testing.T) {
 		},
 	}
 
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	if !reflect.DeepEqual(expected.Data, result.Data) {
+		t.Fatalf("Expected data: %v, got: %v", expected.Data, result.Data)
+	}
+	if !testutil.EqualFormattedErrors(expected.Errors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
 }
 
@@ -253,7 +256,7 @@ func TestExtensionResolveFieldDidStartPanic(t *testing.T) {
 		if true {
 			panic(errors.New("test error"))
 		}
-		return ctx, func(v interface{}, err error) {
+		return ctx, func(v any, err error) {
 
 		}
 	}
@@ -268,23 +271,25 @@ func TestExtensionResolveFieldDidStartPanic(t *testing.T) {
 	})
 
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "foo",
 		},
 		Errors: []gqlerrors.FormattedError{
 			gqlerrors.FormatError(fmt.Errorf("%s.ResolveFieldDidStart: %v", ext.Name(), errors.New("test error"))),
 		},
 	}
-
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	if !reflect.DeepEqual(expected.Data, result.Data) {
+		t.Fatalf("Expected data: %v, got: %v", expected.Data, result.Data)
+	}
+	if !testutil.EqualFormattedErrors(expected.Errors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
 }
 
 func TestExtensionResolveFieldFinishFuncPanic(t *testing.T) {
 	ext := newtestExt("testExt")
 	ext.resolveFieldDidStartFn = func(ctx context.Context, i *graphql.ResolveInfo) (context.Context, graphql.ResolveFieldFinishFunc) {
-		return ctx, func(v interface{}, err error) {
+		return ctx, func(v any, err error) {
 			panic(errors.New("test error"))
 		}
 	}
@@ -299,16 +304,18 @@ func TestExtensionResolveFieldFinishFuncPanic(t *testing.T) {
 	})
 
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "foo",
 		},
 		Errors: []gqlerrors.FormattedError{
 			gqlerrors.FormatError(fmt.Errorf("%s.ResolveFieldFinishFunc: %v", ext.Name(), errors.New("test error"))),
 		},
 	}
-
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	if !reflect.DeepEqual(expected.Data, result.Data) {
+		t.Fatalf("Expected data: %v, got: %v", expected.Data, result.Data)
+	}
+	if !testutil.EqualFormattedErrors(expected.Errors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
 	}
 }
 
@@ -316,7 +323,7 @@ func TestExtensionResolveFieldFinishFuncAfterError(t *testing.T) {
 	var fnErrs int
 	ext := newtestExt("testExt")
 	ext.resolveFieldDidStartFn = func(ctx context.Context, i *graphql.ResolveInfo) (context.Context, graphql.ResolveFieldFinishFunc) {
-		return ctx, func(v interface{}, err error) {
+		return ctx, func(v any, err error) {
 			if err != nil {
 				fnErrs++
 			}
@@ -343,7 +350,7 @@ func TestExtensionResolveFieldFinishFuncAfterError(t *testing.T) {
 
 func TestExtensionGetResultPanic(t *testing.T) {
 	ext := newtestExt("testExt")
-	ext.getResultFn = func(context.Context) interface{} {
+	ext.getResultFn = func(context.Context) any {
 		if true {
 			panic(errors.New("test error"))
 		}
@@ -363,17 +370,23 @@ func TestExtensionGetResultPanic(t *testing.T) {
 	})
 
 	expected := &graphql.Result{
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"a": "foo",
 		},
 		Errors: []gqlerrors.FormattedError{
 			gqlerrors.FormatError(fmt.Errorf("%s.GetResult: %v", ext.Name(), errors.New("test error"))),
 		},
-		Extensions: make(map[string]interface{}),
+		Extensions: make(map[string]any),
 	}
 
-	if !reflect.DeepEqual(expected, result) {
-		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	if !reflect.DeepEqual(expected.Data, result.Data) {
+		t.Fatalf("Expected data: %v, got: %v", expected.Data, result.Data)
+	}
+	if !testutil.EqualFormattedErrors(expected.Errors, result.Errors) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected.Errors, result.Errors))
+	}
+	if !reflect.DeepEqual(expected.Extensions, result.Extensions) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected.Extensions, result.Extensions))
 	}
 }
 
@@ -409,7 +422,7 @@ func newtestExt(name string) *testExt {
 	}
 	if ext.resolveFieldDidStartFn == nil {
 		ext.resolveFieldDidStartFn = func(ctx context.Context, i *graphql.ResolveInfo) (context.Context, graphql.ResolveFieldFinishFunc) {
-			return ctx, func(v interface{}, err error) {
+			return ctx, func(v any, err error) {
 
 			}
 		}
@@ -420,7 +433,7 @@ func newtestExt(name string) *testExt {
 		}
 	}
 	if ext.getResultFn == nil {
-		ext.getResultFn = func(context.Context) interface{} {
+		ext.getResultFn = func(context.Context) any {
 			return nil
 		}
 	}
@@ -431,7 +444,7 @@ type testExt struct {
 	name                   string
 	initFn                 func(ctx context.Context, p *graphql.Params) context.Context
 	hasResultFn            func() bool
-	getResultFn            func(context.Context) interface{}
+	getResultFn            func(context.Context) any
 	parseDidStartFn        func(ctx context.Context) (context.Context, graphql.ParseFinishFunc)
 	validationDidStartFn   func(ctx context.Context) (context.Context, graphql.ValidationFinishFunc)
 	executionDidStartFn    func(ctx context.Context) (context.Context, graphql.ExecutionFinishFunc)
@@ -450,7 +463,7 @@ func (t *testExt) HasResult() bool {
 	return t.hasResultFn()
 }
 
-func (t *testExt) GetResult(ctx context.Context) interface{} {
+func (t *testExt) GetResult(ctx context.Context) any {
 	return t.getResultFn(ctx)
 }
 
