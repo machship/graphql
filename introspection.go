@@ -72,6 +72,54 @@ var (
 )
 
 func init() {
+	DirectiveArgumentType = NewObject(ObjectConfig{
+		Name:        "__DirectiveArgument",
+		Description: "A Directive Argument is a name/value pair that can be passed to a directive",
+		Fields: Fields{
+			"name": {
+				Type:        NewNonNull(String),
+				Description: "The name of the directive argument",
+				Resolve: func(p ResolveParams) (any, error) {
+					if arg, ok := p.Source.(*DirectiveArgument); ok {
+						return arg.Name, nil
+					}
+					return nil, nil
+				},
+			},
+			"value": {
+				Type:        NewNonNull(String),
+				Description: "The value of the directive argument",
+				Resolve: func(p ResolveParams) (any, error) {
+					if arg, ok := p.Source.(*DirectiveArgument); ok {
+						return arg.Value, nil
+					}
+					return nil, nil
+				},
+			},
+		},
+	})
+
+	AppliedDirectiveType = NewObject(ObjectConfig{
+		Name: "__AppliedDirective",
+		Description: "An Applied Directive is a directive that has been applied to a field, " +
+			"argument, input field, or type",
+		Fields: Fields{
+			"name": {
+				Type:        NewNonNull(String),
+				Description: "The name of the applied directive",
+			},
+			"args": {
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							DirectiveArgumentType,
+						),
+					),
+				),
+				Description: "The arguments of the applied directive",
+			},
+		},
+	})
 
 	TypeKindEnumType = NewEnum(EnumConfig{
 		Name:        "__TypeKind",
