@@ -21,28 +21,28 @@ const (
 )
 
 var (
-	// SchemaType is type definition for __Schema
+	// SchemaType is the type definition of __Schema.
 	SchemaType *Object
 
-	// DirectiveType is type definition for __Directive
+	// DirectiveType is the type definition of __Directive.
 	DirectiveType *Object
 
-	// TypeType is type definition for __Type
+	// TypeType is the type definition of __Type.
 	TypeType *Object
 
-	// FieldType is type definition for __Field
+	// FieldType is the type definition of __Field.
 	FieldType *Object
 
-	// InputValueType is type definition for __InputValue
+	// InputValueType is the type definition of __InputValue.
 	InputValueType *Object
 
-	// EnumValueType is type definition for __EnumValue
+	// EnumValueType is the type definition of __EnumValue.
 	EnumValueType *Object
 
-	// TypeKindEnumType is type definition for __TypeKind
+	// TypeKindEnumType is the type definition of __TypeKind.
 	TypeKindEnumType *Enum
 
-	// DirectiveLocationEnumType is type definition for __DirectiveLocation
+	// DirectiveLocationEnumType is the type definition of __DirectiveLocation.
 	DirectiveLocationEnumType *Enum
 
 	// Meta-field definitions.
