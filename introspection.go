@@ -20,40 +20,42 @@ const (
 	TypeKindNonNull     = "NON_NULL"
 )
 
-// SchemaType is type definition for __Schema
-var SchemaType *Object
+var (
+	// SchemaType is type definition for __Schema
+	SchemaType *Object
 
-// DirectiveType is type definition for __Directive
-var DirectiveType *Object
+	// DirectiveType is type definition for __Directive
+	DirectiveType *Object
 
-// TypeType is type definition for __Type
-var TypeType *Object
+	// TypeType is type definition for __Type
+	TypeType *Object
 
-// FieldType is type definition for __Field
-var FieldType *Object
+	// FieldType is type definition for __Field
+	FieldType *Object
 
-// InputValueType is type definition for __InputValue
-var InputValueType *Object
+	// InputValueType is type definition for __InputValue
+	InputValueType *Object
 
-// EnumValueType is type definition for __EnumValue
-var EnumValueType *Object
+	// EnumValueType is type definition for __EnumValue
+	EnumValueType *Object
 
-// TypeKindEnumType is type definition for __TypeKind
-var TypeKindEnumType *Enum
+	// TypeKindEnumType is type definition for __TypeKind
+	TypeKindEnumType *Enum
 
-// DirectiveLocationEnumType is type definition for __DirectiveLocation
-var DirectiveLocationEnumType *Enum
+	// DirectiveLocationEnumType is type definition for __DirectiveLocation
+	DirectiveLocationEnumType *Enum
 
-// Meta-field definitions.
+	// Meta-field definitions.
 
-// SchemaMetaFieldDef Meta field definition for Schema
-var SchemaMetaFieldDef *FieldDefinition
+	// SchemaMetaFieldDef Meta field definition for Schema
+	SchemaMetaFieldDef *FieldDefinition
 
-// TypeMetaFieldDef Meta field definition for types
-var TypeMetaFieldDef *FieldDefinition
+	// TypeMetaFieldDef Meta field definition for types
+	TypeMetaFieldDef *FieldDefinition
 
-// TypeNameMetaFieldDef Meta field definition for type names
-var TypeNameMetaFieldDef *FieldDefinition
+	// TypeNameMetaFieldDef Meta field definition for type names
+	TypeNameMetaFieldDef *FieldDefinition
+)
 
 func init() {
 
