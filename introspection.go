@@ -878,40 +878,32 @@ func astFromValue(value any, ttype Type) ast.Value {
 		// TODO: implement astFromValue from Map to Value
 	}
 
-	if value, ok := value.(bool); ok {
+	switch v := value.(type) {
+	case bool:
 		return ast.NewBooleanValue(&ast.BooleanValue{
-			Value: value,
+			Value: v,
 		})
-	}
-	if value, ok := value.(int); ok {
+	case int:
 		if ttype == Float {
 			return ast.NewIntValue(&ast.IntValue{
-				Value: fmt.Sprintf("%v.0", value),
+				Value: fmt.Sprintf("%v.0", v),
 			})
 		}
 		return ast.NewIntValue(&ast.IntValue{
-			Value: fmt.Sprintf("%v", value),
+			Value: fmt.Sprintf("%v", v),
 		})
-	}
-	if value, ok := value.(float32); ok {
+	case float32, float64:
 		return ast.NewFloatValue(&ast.FloatValue{
-			Value: fmt.Sprintf("%v", value),
+			Value: fmt.Sprintf("%v", v),
 		})
-	}
-	if value, ok := value.(float64); ok {
-		return ast.NewFloatValue(&ast.FloatValue{
-			Value: fmt.Sprintf("%v", value),
-		})
-	}
-
-	if value, ok := value.(string); ok {
+	case string:
 		if _, ok := ttype.(*Enum); ok {
 			return ast.NewEnumValue(&ast.EnumValue{
-				Value: fmt.Sprintf("%v", value),
+				Value: fmt.Sprintf("%v", v),
 			})
 		}
 		return ast.NewStringValue(&ast.StringValue{
-			Value: fmt.Sprintf("%v", value),
+			Value: fmt.Sprintf("%v", v),
 		})
 	}
 
