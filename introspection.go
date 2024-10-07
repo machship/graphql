@@ -45,6 +45,20 @@ var (
 	// DirectiveLocationEnumType is the type definition of __DirectiveLocation.
 	DirectiveLocationEnumType *Enum
 
+	// DirectiveArgumentType is the type definition for __DirectiveArgument.
+	//
+	// Note: __DirectiveArgument is not a part of the official graphql specification. It
+	// is an extension to the specification implemented by the graphql-dotnet and
+	// graphql-java libraries.
+	DirectiveArgumentType *Object
+
+	// AppliedDirectiveType is the type definition of __AppliedDirective.
+	//
+	// Note: __AppliedDirective is not a part of the official graphql specification. It
+	// is an extension to the specification implemented by the graphql-dotnet and
+	// graphql-java libraries.
+	AppliedDirectiveType *Object
+
 	// Meta-field definitions.
 
 	// SchemaMetaFieldDef Meta field definition for Schema
