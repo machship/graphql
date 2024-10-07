@@ -1,6 +1,8 @@
 package testutil_test
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/machship/graphql/testutil"
@@ -299,5 +301,26 @@ func TestSubset_ComplexMixed_Fail(t *testing.T) {
 	}
 	if testutil.ContainSubset(super, sub) {
 		t.Fatalf("expected map to not be subset of super, got true")
+	}
+}
+
+// Does it generate the expected path?
+func TestRootDir(t *testing.T) {
+	dir := testutil.RootDir(t)
+	path := filepath.Join(dir, "go.mod")
+
+	if _, err := os.Stat(path); err != nil {
+		t.Logf("Path: %q", path)
+		t.Fatalf("Unexpected error: %s", err)
+	}
+}
+
+// Does it generate the expected path?
+func TestPathFromRoot(t *testing.T) {
+	path := testutil.PathFromRoot(t, "testutil", "testutil.go")
+
+	if _, err := os.Stat(path); err != nil {
+		t.Logf("Path: %q", path)
+		t.Fatalf("Unexpected error: %s", err)
 	}
 }
