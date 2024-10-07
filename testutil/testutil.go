@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"reflect"
+	"runtime"
 	"strconv"
 	"testing"
 
@@ -508,4 +510,24 @@ func ContextWithValue(ctx context.Context, k string, v any) context.Context {
 // ContextValue retrieves a value from the context.
 func ContextValue(ctx context.Context, k string) any {
 	return ctx.Value(testCtxKey(k))
+}
+
+// RootDir returns an absolute path to the root of the module. It fatally fails
+// the test if the runtime information could not be obtained.
+func RootDir(t *testing.T) string {
+	t.Helper()
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatalf("Failed to retrieve runtime information")
+	}
+
+	return filepath.Join(filepath.Dir(filename), "..")
+}
+
+// PathFromRoot calls [RootDir] and creates a path with the result and the provided
+// slice of path components.
+func PathFromRoot(t *testing.T, components ...string) string {
+	t.Helper()
+	components = append([]string{RootDir(t)}, components...)
+	return filepath.Join(components...)
 }
