@@ -9,8 +9,15 @@ import (
 	"github.com/machship/graphql/language/ast"
 )
 
+// AppliedDirectiveProvider implementations return a list of directives that
+// have been applied to the type.
+type AppliedDirectiveProvider interface {
+	AppliedDirectives() []*AppliedDirective
+}
+
 // Type interface for all of the possible kinds of GraphQL types
 type Type interface {
+	AppliedDirectiveProvider
 	Name() string
 	Description() string
 	String() string
@@ -29,6 +36,7 @@ var _ Type = (*Argument)(nil)
 
 // Input interface for types that may be used as input types for arguments and directives.
 type Input interface {
+	AppliedDirectiveProvider
 	Name() string
 	Description() string
 	String() string
@@ -85,6 +93,7 @@ func IsLeafType(ttype Type) bool {
 
 // Output interface for types that may be used as output types as the result of fields.
 type Output interface {
+	AppliedDirectiveProvider
 	Name() string
 	Description() string
 	String() string
@@ -101,6 +110,7 @@ var _ Output = (*NonNull)(nil)
 
 // Composite interface for types that may describe the parent context of a selection set.
 type Composite interface {
+	AppliedDirectiveProvider
 	Name() string
 	Description() string
 	String() string
@@ -205,6 +215,7 @@ type Scalar struct {
 
 	scalarConfig ScalarConfig
 	err          error
+	directives   []*AppliedDirective
 }
 
 // SerializeFn is a function type for serializing a GraphQLScalar type value
@@ -223,6 +234,7 @@ type ScalarConfig struct {
 	Serialize    SerializeFn
 	ParseValue   ParseValueFn
 	ParseLiteral ParseLiteralFn
+	Directives   []*AppliedDirective
 }
 
 // NewScalar creates a new GraphQLScalar
@@ -298,6 +310,9 @@ func (st *Scalar) String() string {
 func (st *Scalar) Error() error {
 	return st.err
 }
+func (s *Scalar) AppliedDirectives() []*AppliedDirective {
+	return s.directives
+}
 
 // Object Type Definition
 //
@@ -346,6 +361,8 @@ type Object struct {
 	interfaces            []*Interface
 	// Interim alternative to throwing an error during schema definition at run-time
 	err error
+
+	directives []*AppliedDirective
 }
 
 // IsTypeOfParams Params for IsTypeOfFn()
@@ -373,6 +390,7 @@ type ObjectConfig struct {
 	Fields      any        `json:"fields"`
 	IsTypeOf    IsTypeOfFn `json:"isTypeOf"`
 	Description string     `json:"description"`
+	Directives  []*AppliedDirective
 }
 
 type FieldsThunk func() Fields
@@ -395,6 +413,7 @@ func NewObject(config ObjectConfig) *Object {
 	objectType.PrivateDescription = config.Description
 	objectType.IsTypeOf = config.IsTypeOf
 	objectType.typeConfig = config
+	objectType.directives = config.Directives
 
 	return objectType
 }
@@ -468,6 +487,10 @@ func (gt *Object) Error() error {
 	return gt.err
 }
 
+func (o *Object) AppliedDirectives() []*AppliedDirective {
+	return o.directives
+}
+
 func defineInterfaces(ttype *Object, interfaces []*Interface) ([]*Interface, error) {
 	ifaces := []*Interface{}
 
@@ -535,6 +558,7 @@ func defineFieldMap(ttype Named, fieldMap Fields) (FieldDefinitionMap, error) {
 			Resolve:           field.Resolve,
 			Subscribe:         field.Subscribe,
 			DeprecationReason: field.DeprecationReason,
+			Directives:        field.Directives,
 		}
 
 		fieldDef.Args = []*Argument{}
@@ -609,6 +633,7 @@ type Field struct {
 	Subscribe         FieldResolveFn      `json:"-"`
 	DeprecationReason string              `json:"deprecationReason"`
 	Description       string              `json:"description"`
+	Directives        []*AppliedDirective
 }
 
 type FieldConfigArgument map[string]*ArgumentConfig
@@ -628,6 +653,11 @@ type FieldDefinition struct {
 	Resolve           FieldResolveFn `json:"-"`
 	Subscribe         FieldResolveFn `json:"-"`
 	DeprecationReason string         `json:"deprecationReason"`
+	Directives        []*AppliedDirective
+}
+
+func (f *FieldDefinition) AppliedDirectives() []*AppliedDirective {
+	return f.Directives
 }
 
 type FieldArgument struct {
@@ -635,6 +665,7 @@ type FieldArgument struct {
 	Type         Type   `json:"type"`
 	DefaultValue any    `json:"defaultValue"`
 	Description  string `json:"description"`
+	Directives   []*AppliedDirective
 }
 
 type Argument struct {
@@ -655,6 +686,10 @@ func (st *Argument) String() string {
 	return st.PrivateName
 }
 func (st *Argument) Error() error {
+	return nil
+}
+
+func (a *Argument) AppliedDirectives() []*AppliedDirective {
 	return nil
 }
 
@@ -682,12 +717,14 @@ type Interface struct {
 	initialisedFields bool
 	fields            FieldDefinitionMap
 	err               error
+	directives        []*AppliedDirective
 }
 type InterfaceConfig struct {
 	Name        string `json:"name"`
 	Fields      any    `json:"fields"`
 	ResolveType ResolveTypeFn
 	Description string `json:"description"`
+	Directives  []*AppliedDirective
 }
 
 // ResolveTypeParams Params for ResolveTypeFn()
@@ -720,6 +757,7 @@ func NewInterface(config InterfaceConfig) *Interface {
 	it.PrivateDescription = config.Description
 	it.ResolveType = config.ResolveType
 	it.typeConfig = config
+	it.directives = config.Directives
 
 	return it
 }
@@ -768,6 +806,10 @@ func (it *Interface) Error() error {
 	return it.err
 }
 
+func (i *Interface) AppliedDirectives() []*AppliedDirective {
+	return i.directives
+}
+
 // Union Type Definition
 //
 // When a field can return one of a heterogeneous set of types, a Union type
@@ -798,6 +840,8 @@ type Union struct {
 	types           []*Object
 
 	err error
+
+	directives []*AppliedDirective
 }
 
 type UnionTypesThunk func() []*Object
@@ -807,6 +851,7 @@ type UnionConfig struct {
 	Types       any    `json:"types"`
 	ResolveType ResolveTypeFn
 	Description string `json:"description"`
+	Directives  []*AppliedDirective
 }
 
 func NewUnion(config UnionConfig) *Union {
@@ -821,8 +866,8 @@ func NewUnion(config UnionConfig) *Union {
 	objectType.PrivateName = config.Name
 	objectType.PrivateDescription = config.Description
 	objectType.ResolveType = config.ResolveType
-
 	objectType.typeConfig = config
+	objectType.directives = config.Directives
 
 	return objectType
 }
@@ -900,6 +945,10 @@ func (ut *Union) Error() error {
 	return ut.err
 }
 
+func (u *Union) AppliedDirectives() []*AppliedDirective {
+	return u.directives
+}
+
 // Enum Type Definition
 //
 // Some leaf values of requests and input values are Enums. GraphQL serializes
@@ -930,17 +979,21 @@ type Enum struct {
 	nameLookup   map[string]*EnumValueDefinition
 
 	err error
+
+	directives []*AppliedDirective
 }
 type EnumValueConfigMap map[string]*EnumValueConfig
 type EnumValueConfig struct {
 	Value             any    `json:"value"`
 	DeprecationReason string `json:"deprecationReason"`
 	Description       string `json:"description"`
+	Directives        []*AppliedDirective
 }
 type EnumConfig struct {
 	Name        string             `json:"name"`
 	Values      EnumValueConfigMap `json:"values"`
 	Description string             `json:"description"`
+	Directives  []*AppliedDirective
 }
 type EnumValueDefinition struct {
 	Name              string `json:"name"`
@@ -959,6 +1012,7 @@ func NewEnum(config EnumConfig) *Enum {
 
 	gt.PrivateName = config.Name
 	gt.PrivateDescription = config.Description
+	gt.directives = config.Directives
 	if gt.values, gt.err = gt.defineEnumValues(config.Values); gt.err != nil {
 		return gt
 	}
@@ -1076,6 +1130,10 @@ func (gt *Enum) getNameLookup() map[string]*EnumValueDefinition {
 	return gt.nameLookup
 }
 
+func (e *Enum) AppliedDirectives() []*AppliedDirective {
+	return e.directives
+}
+
 // InputObject Type Definition
 //
 // An input object defines a structured collection of fields which may be
@@ -1101,17 +1159,20 @@ type InputObject struct {
 	fields     InputObjectFieldMap
 	init       bool
 	err        error
+	directives []*AppliedDirective
 }
 type InputObjectFieldConfig struct {
 	Type         Input  `json:"type"`
 	DefaultValue any    `json:"defaultValue"`
 	Description  string `json:"description"`
+	Directives   []*AppliedDirective
 }
 type InputObjectField struct {
 	PrivateName        string `json:"name"`
 	Type               Input  `json:"type"`
 	DefaultValue       any    `json:"defaultValue"`
 	PrivateDescription string `json:"description"`
+	Directives         []*AppliedDirective
 }
 
 func (st *InputObjectField) Name() string {
@@ -1127,6 +1188,10 @@ func (st *InputObjectField) Error() error {
 	return nil
 }
 
+func (i *InputObjectField) AppliedDirectives() []*AppliedDirective {
+	return i.Directives
+}
+
 type InputObjectConfigFieldMap map[string]*InputObjectFieldConfig
 type InputObjectFieldMap map[string]*InputObjectField
 type InputObjectConfigFieldMapThunk func() InputObjectConfigFieldMap
@@ -1134,6 +1199,7 @@ type InputObjectConfig struct {
 	Name        string `json:"name"`
 	Fields      any    `json:"fields"`
 	Description string `json:"description"`
+	Directives  []*AppliedDirective
 }
 
 func NewInputObject(config InputObjectConfig) *InputObject {
@@ -1190,6 +1256,10 @@ func (gt *InputObject) defineFieldMap() InputObjectFieldMap {
 	}
 	gt.init = true
 	return resultFieldMap
+}
+
+func (i *InputObject) AppliedDirectives() []*AppliedDirective {
+	return i.directives
 }
 
 func (gt *InputObject) AddFieldConfig(fieldName string, fieldConfig *InputObjectFieldConfig) {
@@ -1271,6 +1341,10 @@ func (gl *List) Error() error {
 	return gl.err
 }
 
+func (l *List) AppliedDirectives() []*AppliedDirective {
+	return nil
+}
+
 // NonNull Modifier
 //
 // A non-null is a kind of type marker, a wrapping type which points to another
@@ -1320,6 +1394,10 @@ func (gl *NonNull) String() string {
 }
 func (gl *NonNull) Error() error {
 	return gl.err
+}
+
+func (n *NonNull) AppliedDirectives() []*AppliedDirective {
+	return nil
 }
 
 var NameRegExp = regexp.MustCompile("^[_a-zA-Z][_a-zA-Z0-9]*$")

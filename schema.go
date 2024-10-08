@@ -43,6 +43,12 @@ type Schema struct {
 	implementations  map[string][]*Object
 	possibleTypeMap  map[string]map[string]bool
 	extensions       []Extension
+
+	appliedDirectives []*Directive
+}
+
+func (s *Schema) AppliedDirectives() []*Directive {
+	return s.appliedDirectives
 }
 
 func NewSchema(config SchemaConfig) (Schema, error) {

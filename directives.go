@@ -43,6 +43,8 @@ type Directive struct {
 	Args        []*Argument `json:"args"`
 
 	err error
+
+	directives []*AppliedDirective
 }
 
 // DirectiveConfig options for creating a new GraphQLDirective
@@ -51,6 +53,7 @@ type DirectiveConfig struct {
 	Description string              `json:"description"`
 	Locations   []string            `json:"locations"`
 	Args        FieldConfigArgument `json:"args"`
+	Directives  []*AppliedDirective
 }
 
 func NewDirective(config DirectiveConfig) *Directive {
@@ -89,7 +92,13 @@ func NewDirective(config DirectiveConfig) *Directive {
 	dir.Description = config.Description
 	dir.Locations = config.Locations
 	dir.Args = args
+	dir.directives = config.Directives
 	return dir
+}
+
+// AppliedDirectives returns the directives that have been applied to this directive.
+func (d *Directive) AppliedDirectives() []*AppliedDirective {
+	return d.directives
 }
 
 // Apply transforms a directive into an applied directive, which can be used to

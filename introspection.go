@@ -296,6 +296,16 @@ func init() {
 			"enumValues":    &Field{},
 			"inputFields":   &Field{},
 			"ofType":        &Field{},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
+			},
 		},
 	})
 
@@ -338,6 +348,16 @@ func init() {
 					}
 					return nil, nil
 				},
+			},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
 			},
 		},
 	})
@@ -384,6 +404,16 @@ func init() {
 					}
 					return nil, nil
 				},
+			},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
 			},
 		},
 	})
@@ -470,6 +500,16 @@ func init() {
 					return false, nil
 				},
 			},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
+			},
 		},
 	})
 
@@ -543,6 +583,22 @@ func init() {
 					return nil, nil
 				},
 			},
+			"appliedDirectives": {
+				Resolve: func(p ResolveParams) (any, error) {
+					// TODO: figure out why `Schema` is not being passed as a pointer
+					if schema, ok := p.Source.(Schema); ok {
+						return schema.AppliedDirectives(), nil
+					}
+					return nil, nil
+				},
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
+			},
 		},
 	})
 
@@ -577,6 +633,16 @@ func init() {
 					}
 					return nil, nil
 				},
+			},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
 			},
 		},
 	})
@@ -738,6 +804,15 @@ func init() {
 		},
 	}
 
+}
+
+// appliedDirectiveResolver is a resolver to be used where types return
+// an `appliedDirectives` field.
+func appliedDirectiveResolver(p ResolveParams) (any, error) {
+	if adp, ok := p.Source.(AppliedDirectiveProvider); ok {
+		return adp.AppliedDirectives(), nil
+	}
+	return nil, nil
 }
 
 // Produces a GraphQL Value AST given a Golang value.
