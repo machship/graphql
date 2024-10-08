@@ -92,6 +92,31 @@ func NewDirective(config DirectiveConfig) *Directive {
 	return dir
 }
 
+// Apply transforms a directive into an applied directive, which can be used to
+// modify execution behavior. This method is intended to be used to apply a directive
+// to a field, fragment, or type (i.e. anywhere a directive can be applied).
+func (d *Directive) Apply(args []*DirectiveArgument) *AppliedDirective {
+	return &AppliedDirective{
+		Name:        d.Name,
+		Description: d.Description,
+		Args:        args,
+	}
+}
+
+// AppliedDirective is a directive that has been applied to a field, fragment, or type.
+type AppliedDirective struct {
+	Name        string
+	Description string
+	Args        []*DirectiveArgument
+}
+
+// DirectiveArgument is an argument to a directive. The value is always represented as a
+// string in graphQL queries, but may be of any type.
+type DirectiveArgument struct {
+	Name  string
+	Value any
+}
+
 // IncludeDirective is used to conditionally include fields or fragments.
 var IncludeDirective = NewDirective(DirectiveConfig{
 	Name: "include",
