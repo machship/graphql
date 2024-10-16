@@ -757,6 +757,8 @@ func init() {
 		Type: TypeType,
 	})
 
+	DirectiveArgumentType.ensureCache()
+	AppliedDirectiveType.ensureCache()
 	SchemaType.ensureCache()
 	DirectiveType.ensureCache()
 	TypeType.ensureCache()
