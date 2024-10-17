@@ -185,7 +185,7 @@ func ContextValue(ctx context.Context, k string) any {
 
 // RootDir returns an absolute path to the root of the module. It fatally fails
 // the test if the runtime information could not be obtained.
-func RootDir(t *testing.T) string {
+func RootDir(t testing.TB) string {
 	t.Helper()
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
@@ -197,7 +197,7 @@ func RootDir(t *testing.T) string {
 
 // PathFromRoot calls [RootDir] and creates a path with the result and the provided
 // slice of path components.
-func PathFromRoot(t *testing.T, components ...string) string {
+func PathFromRoot(t testing.TB, components ...string) string {
 	t.Helper()
 	components = append([]string{RootDir(t)}, components...)
 	return filepath.Join(components...)
