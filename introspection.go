@@ -20,42 +20,106 @@ const (
 	TypeKindNonNull     = "NON_NULL"
 )
 
-// SchemaType is type definition for __Schema
-var SchemaType *Object
+var (
+	// SchemaType is the type definition of __Schema.
+	SchemaType *Object
 
-// DirectiveType is type definition for __Directive
-var DirectiveType *Object
+	// DirectiveType is the type definition of __Directive.
+	DirectiveType *Object
 
-// TypeType is type definition for __Type
-var TypeType *Object
+	// TypeType is the type definition of __Type.
+	TypeType *Object
 
-// FieldType is type definition for __Field
-var FieldType *Object
+	// FieldType is the type definition of __Field.
+	FieldType *Object
 
-// InputValueType is type definition for __InputValue
-var InputValueType *Object
+	// InputValueType is the type definition of __InputValue.
+	InputValueType *Object
 
-// EnumValueType is type definition for __EnumValue
-var EnumValueType *Object
+	// EnumValueType is the type definition of __EnumValue.
+	EnumValueType *Object
 
-// TypeKindEnumType is type definition for __TypeKind
-var TypeKindEnumType *Enum
+	// TypeKindEnumType is the type definition of __TypeKind.
+	TypeKindEnumType *Enum
 
-// DirectiveLocationEnumType is type definition for __DirectiveLocation
-var DirectiveLocationEnumType *Enum
+	// DirectiveLocationEnumType is the type definition of __DirectiveLocation.
+	DirectiveLocationEnumType *Enum
 
-// Meta-field definitions.
+	// DirectiveArgumentType is the type definition for __DirectiveArgument.
+	//
+	// Note: __DirectiveArgument is not a part of the official graphql specification. It
+	// is an extension to the specification implemented by the graphql-dotnet and
+	// graphql-java libraries.
+	DirectiveArgumentType *Object
 
-// SchemaMetaFieldDef Meta field definition for Schema
-var SchemaMetaFieldDef *FieldDefinition
+	// AppliedDirectiveType is the type definition of __AppliedDirective.
+	//
+	// Note: __AppliedDirective is not a part of the official graphql specification. It
+	// is an extension to the specification implemented by the graphql-dotnet and
+	// graphql-java libraries.
+	AppliedDirectiveType *Object
 
-// TypeMetaFieldDef Meta field definition for types
-var TypeMetaFieldDef *FieldDefinition
+	// Meta-field definitions.
 
-// TypeNameMetaFieldDef Meta field definition for type names
-var TypeNameMetaFieldDef *FieldDefinition
+	// SchemaMetaFieldDef Meta field definition for Schema
+	SchemaMetaFieldDef *FieldDefinition
+
+	// TypeMetaFieldDef Meta field definition for types
+	TypeMetaFieldDef *FieldDefinition
+
+	// TypeNameMetaFieldDef Meta field definition for type names
+	TypeNameMetaFieldDef *FieldDefinition
+)
 
 func init() {
+	DirectiveArgumentType = NewObject(ObjectConfig{
+		Name:        "__DirectiveArgument",
+		Description: "A Directive Argument is a name/value pair that can be passed to a directive",
+		Fields: Fields{
+			"name": {
+				Type:        NewNonNull(String),
+				Description: "The name of the directive argument",
+				Resolve: func(p ResolveParams) (any, error) {
+					if arg, ok := p.Source.(*DirectiveArgument); ok {
+						return arg.Name, nil
+					}
+					return nil, nil
+				},
+			},
+			"value": {
+				Type:        NewNonNull(String),
+				Description: "The value of the directive argument",
+				Resolve: func(p ResolveParams) (any, error) {
+					if arg, ok := p.Source.(*DirectiveArgument); ok {
+						return arg.Value, nil
+					}
+					return nil, nil
+				},
+			},
+		},
+	})
+
+	AppliedDirectiveType = NewObject(ObjectConfig{
+		Name: "__AppliedDirective",
+		Description: "An Applied Directive is a directive that has been applied to a field, " +
+			"argument, input field, or type",
+		Fields: Fields{
+			"name": {
+				Type:        NewNonNull(String),
+				Description: "The name of the applied directive",
+			},
+			"args": {
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							DirectiveArgumentType,
+						),
+					),
+				),
+				Description: "The arguments of the applied directive",
+			},
+		},
+	})
 
 	TypeKindEnumType = NewEnum(EnumConfig{
 		Name:        "__TypeKind",
@@ -232,6 +296,16 @@ func init() {
 			"enumValues":    &Field{},
 			"inputFields":   &Field{},
 			"ofType":        &Field{},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
+			},
 		},
 	})
 
@@ -274,6 +348,16 @@ func init() {
 					}
 					return nil, nil
 				},
+			},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
 			},
 		},
 	})
@@ -320,6 +404,16 @@ func init() {
 					}
 					return nil, nil
 				},
+			},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
 			},
 		},
 	})
@@ -406,6 +500,16 @@ func init() {
 					return false, nil
 				},
 			},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
+			},
 		},
 	})
 
@@ -479,6 +583,22 @@ func init() {
 					return nil, nil
 				},
 			},
+			"appliedDirectives": {
+				Resolve: func(p ResolveParams) (any, error) {
+					// TODO: figure out why `Schema` is not being passed as a pointer
+					if schema, ok := p.Source.(Schema); ok {
+						return schema.AppliedDirectives(), nil
+					}
+					return nil, nil
+				},
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
+			},
 		},
 	})
 
@@ -513,6 +633,16 @@ func init() {
 					}
 					return nil, nil
 				},
+			},
+			"appliedDirectives": {
+				Resolve: appliedDirectiveResolver,
+				Type: NewNonNull(
+					NewList(
+						NewNonNull(
+							AppliedDirectiveType,
+						),
+					),
+				),
 			},
 		},
 	})
@@ -627,6 +757,8 @@ func init() {
 		Type: TypeType,
 	})
 
+	DirectiveArgumentType.ensureCache()
+	AppliedDirectiveType.ensureCache()
 	SchemaType.ensureCache()
 	DirectiveType.ensureCache()
 	TypeType.ensureCache()
@@ -674,6 +806,15 @@ func init() {
 		},
 	}
 
+}
+
+// appliedDirectiveResolver is a resolver to be used where types return
+// an `appliedDirectives` field.
+func appliedDirectiveResolver(p ResolveParams) (any, error) {
+	if adp, ok := p.Source.(AppliedDirectiveProvider); ok {
+		return adp.AppliedDirectives(), nil
+	}
+	return nil, nil
 }
 
 // Produces a GraphQL Value AST given a Golang value.
@@ -739,40 +880,32 @@ func astFromValue(value any, ttype Type) ast.Value {
 		// TODO: implement astFromValue from Map to Value
 	}
 
-	if value, ok := value.(bool); ok {
+	switch v := value.(type) {
+	case bool:
 		return ast.NewBooleanValue(&ast.BooleanValue{
-			Value: value,
+			Value: v,
 		})
-	}
-	if value, ok := value.(int); ok {
+	case int:
 		if ttype == Float {
 			return ast.NewIntValue(&ast.IntValue{
-				Value: fmt.Sprintf("%v.0", value),
+				Value: fmt.Sprintf("%v.0", v),
 			})
 		}
 		return ast.NewIntValue(&ast.IntValue{
-			Value: fmt.Sprintf("%v", value),
+			Value: fmt.Sprintf("%v", v),
 		})
-	}
-	if value, ok := value.(float32); ok {
+	case float32, float64:
 		return ast.NewFloatValue(&ast.FloatValue{
-			Value: fmt.Sprintf("%v", value),
+			Value: fmt.Sprintf("%v", v),
 		})
-	}
-	if value, ok := value.(float64); ok {
-		return ast.NewFloatValue(&ast.FloatValue{
-			Value: fmt.Sprintf("%v", value),
-		})
-	}
-
-	if value, ok := value.(string); ok {
+	case string:
 		if _, ok := ttype.(*Enum); ok {
 			return ast.NewEnumValue(&ast.EnumValue{
-				Value: fmt.Sprintf("%v", value),
+				Value: fmt.Sprintf("%v", v),
 			})
 		}
 		return ast.NewStringValue(&ast.StringValue{
-			Value: fmt.Sprintf("%v", value),
+			Value: fmt.Sprintf("%v", v),
 		})
 	}
 
