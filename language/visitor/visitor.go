@@ -448,12 +448,12 @@ func convertMap(src any) (dest map[string]any, err error) {
 	}
 
 	// return if src is already a map
-	dest, ok := src.(map[string]interface{})
+	dest, ok := src.(map[string]any)
 	if ok {
 		return
 	}
 
-	outputMap := make(map[string]interface{})
+	outputMap := make(map[string]any)
 	val := reflect.ValueOf(src)
 
 	// Dereference pointer if necessary
