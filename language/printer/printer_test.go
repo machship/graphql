@@ -200,3 +200,28 @@ func TestPrinter_CorrectlyPrintsStringArgumentsWithProperQuoting(t *testing.T) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, results))
 	}
 }
+
+func BenchmarkPrint(b *testing.B) {
+	p := testutil.PathFromRoot(b, "kitchen-sink.graphql")
+	q, err := os.ReadFile(p)
+	if err != nil {
+		b.Fatalf("unable to load kitchen-sink.graphql")
+	}
+
+	query := string(q)
+
+	astDoc, err := parser.Parse(parser.ParseParams{
+		Source: query,
+		Options: parser.ParseOptions{
+			NoLocation: true,
+		},
+	})
+	if err != nil {
+		b.Fatalf("Parse failed: %v", err)
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = printer.Print(astDoc)
+	}
+}
