@@ -187,7 +187,6 @@ func executeOperation(p executeOperationParams) *Result {
 		return executeFieldsSerially(executeFieldsParams)
 	}
 	return executeFields(executeFieldsParams)
-
 }
 
 // Extracts the root type of the operation from the schema.
@@ -397,7 +396,7 @@ func dethunkListDepthFirst(list []any) {
 
 type collectFieldsParams struct {
 	ExeContext           *executionContext
-	RuntimeType          *Object // previously known as OperationType
+	RuntimeType          *Object
 	SelectionSet         *ast.SelectionSet
 	Fields               map[string][]*ast.Field
 	VisitedFragmentNames map[string]bool
