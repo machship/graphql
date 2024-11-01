@@ -1,4 +1,4 @@
-package testutil
+package starwars
 
 import (
 	"strconv"
@@ -7,16 +7,16 @@ import (
 )
 
 var (
-	Luke           StarWarsChar
-	Vader          StarWarsChar
-	Han            StarWarsChar
-	Leia           StarWarsChar
-	Tarkin         StarWarsChar
-	Threepio       StarWarsChar
-	Artoo          StarWarsChar
-	HumanData      map[int]StarWarsChar
-	DroidData      map[int]StarWarsChar
-	StarWarsSchema graphql.Schema
+	Luke      StarWarsChar
+	Vader     StarWarsChar
+	Han       StarWarsChar
+	Leia      StarWarsChar
+	Tarkin    StarWarsChar
+	Threepio  StarWarsChar
+	Artoo     StarWarsChar
+	HumanData map[int]StarWarsChar
+	DroidData map[int]StarWarsChar
+	Schema    graphql.Schema
 
 	humanType *graphql.Object
 	droidType *graphql.Object
@@ -308,9 +308,14 @@ func init() {
 			},
 		},
 	})
-	StarWarsSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
+	schema, err := graphql.NewSchema(graphql.SchemaConfig{
 		Query: queryType,
 	})
+	if err != nil {
+		panic(err)
+	}
+
+	Schema = schema
 }
 
 func GetHuman(id int) StarWarsChar {

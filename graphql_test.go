@@ -7,6 +7,7 @@ import (
 
 	"github.com/machship/graphql"
 	"github.com/machship/graphql/testutil"
+	"github.com/machship/graphql/testutil/starwars"
 )
 
 type T struct {
@@ -29,7 +30,7 @@ func init() {
 					}
 				}
 			`,
-			Schema: testutil.StarWarsSchema,
+			Schema: starwars.Schema,
 			Expected: &graphql.Result{
 				Data: map[string]any{
 					"hero": map[string]any{
@@ -51,7 +52,7 @@ func init() {
 					}
 				}
 			`,
-			Schema: testutil.StarWarsSchema,
+			Schema: starwars.Schema,
 			Expected: &graphql.Result{
 				Data: map[string]any{
 					"hero": map[string]any{
@@ -80,7 +81,7 @@ func init() {
 					}
 				}
 			`,
-			Schema: testutil.StarWarsSchema,
+			Schema: starwars.Schema,
 			Expected: &graphql.Result{
 				Data: map[string]any{
 					"human": map[string]any{
