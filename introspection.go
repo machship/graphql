@@ -22,6 +22,7 @@ const (
 
 const (
 	appliedDirectivesField string = "appliedDirectives"
+	argIncludeNonStandard  string = "includeNonStandard"
 )
 
 var (
@@ -776,9 +777,34 @@ func init() {
 		Name:        "__schema",
 		Type:        NewNonNull(SchemaType),
 		Description: "Access the current type schema of this server.",
-		Args:        []*Argument{},
+		Args: []*Argument{
+			{
+				PrivateName: argIncludeNonStandard,
+				Type:        Boolean,
+			},
+		},
 		Resolve: func(p ResolveParams) (any, error) {
-			return p.Info.Schema, nil
+			raw, ok := p.Args[argIncludeNonStandard]
+
+			if ok {
+				nonStandard, ok := raw.(bool)
+				if !ok {
+					return nil, fmt.Errorf("failed to assert argument %q: %v (%T) as bool", argIncludeNonStandard, raw, raw)
+				}
+
+				if nonStandard {
+					return p.Info.Schema, nil
+				}
+			}
+
+			typeMap, err := newStandardTypeMap(p.Info.Schema.typeMap)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create standard type map: %w", err)
+			}
+
+			schema := p.Info.Schema
+			schema.typeMap = typeMap
+			return schema, nil
 		},
 	}
 	TypeMetaFieldDef = &FieldDefinition{
