@@ -918,3 +918,66 @@ func astFromValue(value any, ttype Type) ast.Value {
 		Value: fmt.Sprintf("%v", value),
 	})
 }
+
+// newStandardTypeMap returns a copy of the provided TypeMap with all
+// non-standard types removed. It also removes the non-standard fields
+// of the standard types.
+func newStandardTypeMap(in TypeMap) (TypeMap, error) {
+	// subtract two for __AppliedDirective and __DirectiveArgument
+	out := make(TypeMap, len(in)-2)
+
+	for k, v := range in {
+		switch k {
+		case DirectiveArgumentType.PrivateName,
+			AppliedDirectiveType.PrivateName:
+			// skip non-standard types
+			continue
+		case SchemaType.PrivateName,
+			DirectiveType.PrivateName,
+			TypeType.PrivateName,
+			FieldType.PrivateName,
+			InputValueType.PrivateName,
+			EnumValueType.PrivateName:
+
+			obj, ok := v.(*Object)
+			if !ok {
+				// this should never happen because the types are defined
+				// as objects in the package-level variables above
+				return nil, fmt.Errorf("could not assert value at key %q as *Object; found %T", k, v)
+			}
+
+			v = &Object{
+				typeConfig:            obj.typeConfig,
+				initialisedFields:     obj.initialisedFields,
+				fields:                newStandardFieldDefinitionMap(obj.fields),
+				initialisedInterfaces: obj.initialisedInterfaces,
+				interfaces:            obj.interfaces,
+				err:                   obj.err,
+				PrivateName:           obj.PrivateName,
+				PrivateDescription:    obj.PrivateDescription,
+				IsTypeOf:              obj.IsTypeOf,
+			}
+		}
+
+		out[k] = v
+	}
+
+	return out, nil
+}
+
+// newStandardFieldDefinitionMap returns a copy of the provided FieldDefinitionMap with
+// all non-standard fields removed.
+func newStandardFieldDefinitionMap(in FieldDefinitionMap) FieldDefinitionMap {
+	// subtract one for appliedDirectives field
+	out := make(FieldDefinitionMap, len(in)-1)
+
+	for k, v := range in {
+		if k == appliedDirectivesField {
+			// skip non-standard fields
+			continue
+		}
+		out[k] = v
+	}
+
+	return out
+}
