@@ -20,6 +20,10 @@ const (
 	TypeKindNonNull     = "NON_NULL"
 )
 
+const (
+	appliedDirectivesField string = "appliedDirectives"
+)
+
 var (
 	// SchemaType is the type definition of __Schema.
 	SchemaType *Object
@@ -296,7 +300,7 @@ func init() {
 			"enumValues":    &Field{},
 			"inputFields":   &Field{},
 			"ofType":        &Field{},
-			"appliedDirectives": {
+			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
 				Type: NewNonNull(
 					NewList(
@@ -349,7 +353,7 @@ func init() {
 					return nil, nil
 				},
 			},
-			"appliedDirectives": {
+			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
 				Type: NewNonNull(
 					NewList(
@@ -405,7 +409,7 @@ func init() {
 					return nil, nil
 				},
 			},
-			"appliedDirectives": {
+			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
 				Type: NewNonNull(
 					NewList(
@@ -500,7 +504,7 @@ func init() {
 					return false, nil
 				},
 			},
-			"appliedDirectives": {
+			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
 				Type: NewNonNull(
 					NewList(
@@ -583,7 +587,7 @@ func init() {
 					return nil, nil
 				},
 			},
-			"appliedDirectives": {
+			appliedDirectivesField: {
 				Resolve: func(p ResolveParams) (any, error) {
 					// TODO: figure out why `Schema` is not being passed as a pointer
 					if schema, ok := p.Source.(Schema); ok {
@@ -634,7 +638,7 @@ func init() {
 					return nil, nil
 				},
 			},
-			"appliedDirectives": {
+			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
 				Type: NewNonNull(
 					NewList(
