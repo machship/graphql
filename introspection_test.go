@@ -1468,3 +1468,93 @@ func TestIntrospection_ExposesDescriptionsOnEnums(t *testing.T) {
 		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
 	}
 }
+
+// Does it provide the non-standard introspection types if requested?
+func TestIntrospection_NonStandardTypes(t *testing.T) {
+	queryRoot := graphql.NewObject(graphql.ObjectConfig{
+		Name: "QueryRoot",
+		Fields: graphql.Fields{
+			"onlyField": &graphql.Field{
+				Type: graphql.String,
+			},
+		},
+	})
+	schema, err := graphql.NewSchema(graphql.SchemaConfig{
+		Query: queryRoot,
+	})
+	if err != nil {
+		t.Fatalf("Error creating Schema: %v", err.Error())
+	}
+	query := `{
+		__schema(includeNonStandard: true) {
+			types {
+				name
+			}
+		}
+	}`
+	expected := map[string]any{
+		"__schema": map[string]any{
+			"types": []any{
+				// introspection types
+				map[string]any{
+					"name": "__DirectiveArgument",
+				},
+				map[string]any{
+					"name": "__AppliedDirective",
+				},
+				map[string]any{
+					"name": "__TypeKind",
+				},
+				map[string]any{
+					"name": "__DirectiveLocation",
+				},
+				map[string]any{
+					"name": "__Type",
+				},
+				map[string]any{
+					"name": "__InputValue",
+				},
+				map[string]any{
+					"name": "__Field",
+				},
+				map[string]any{
+					"name": "__Directive",
+				},
+				map[string]any{
+					"name": "__Schema",
+				},
+				map[string]any{
+					"name": "__EnumValue",
+				},
+
+				// other graphql types
+				map[string]any{
+					"name": "Boolean",
+				},
+				map[string]any{
+					"name": "QueryRoot",
+				},
+				map[string]any{
+					"name": "String",
+				},
+			},
+		},
+	}
+	result := g(t, graphql.Params{
+		Schema:        schema,
+		RequestString: query,
+	})
+
+	if result.HasErrors() {
+		t.Fatalf("Unexpected error(s): %v", result.Errors)
+	}
+
+	actual, ok := result.Data.(map[string]any)
+	if !ok {
+		t.Fatalf("Failed to assert result.Data (%T) as map[string]any", actual)
+	}
+
+	if !testutil.ContainSubset(expected, actual) {
+		t.Fatalf("Unexpected result, Diff: %v", testutil.Diff(expected, result))
+	}
+}

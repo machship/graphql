@@ -6,14 +6,14 @@ import (
 	"net/http"
 
 	"github.com/machship/graphql"
-	"github.com/machship/graphql/testutil"
+	"github.com/machship/graphql/testutil/starwars"
 )
 
 func main() {
 	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query().Get("query")
 		result := graphql.Do(graphql.Params{
-			Schema:        testutil.StarWarsSchema,
+			Schema:        starwars.Schema,
 			RequestString: query,
 		})
 		json.NewEncoder(w).Encode(result)
