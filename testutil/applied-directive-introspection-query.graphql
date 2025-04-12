@@ -36,14 +36,65 @@ query AppliedDirectivesIntrospectionQuery {
           }
         }
       }
+      enumValues {
+        name
+        appliedDirectives {
+          name
+          args {
+            name
+            value
+          }
+        }
+      }
     }
     directives {
       name
+      args {
+        name
+        description
+        type {
+          ...TypeRef
+        }
+        defaultValue
+      }
       appliedDirectives {
         name
         args {
           name
           value
+        }
+      }
+    }
+  }
+}
+
+fragment TypeRef on __Type {
+  kind
+  name
+  ofType {
+    kind
+    name
+    ofType {
+      kind
+      name
+      ofType {
+        kind
+        name
+        ofType {
+          kind
+          name
+          ofType {
+            kind
+            name
+            ofType {
+              kind
+              name
+              ofType {
+                kind
+                name
+              }
+            }
+          }
         }
       }
     }

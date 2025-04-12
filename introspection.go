@@ -844,7 +844,10 @@ func appliedDirectiveResolver(p ResolveParams) (any, error) {
 	if adp, ok := p.Source.(AppliedDirectiveProvider); ok {
 		return adp.AppliedDirectives(), nil
 	}
-	return nil, nil
+
+	// Return an empty list if the source is not an AppliedDirectiveProvider,
+	// as the type is expected to not return nil.
+	return []struct{}{}, nil
 }
 
 // Produces a GraphQL Value AST given a Golang value.
