@@ -832,7 +832,12 @@ func init() {
 // an `appliedDirectives` field.
 func appliedDirectiveResolver(p ResolveParams) (any, error) {
 	if adp, ok := p.Source.(AppliedDirectiveProvider); ok {
-		return adp.AppliedDirectives(), nil
+		ads := adp.AppliedDirectives()
+		if len(ads) == 0 {
+			return nil, nil
+		}
+
+		return ads, nil
 	}
 
 	// Return an empty list if the source is not an AppliedDirectiveProvider,
