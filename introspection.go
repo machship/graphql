@@ -303,11 +303,9 @@ func init() {
 			"ofType":        &Field{},
 			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
-				Type: NewNonNull(
-					NewList(
-						NewNonNull(
-							AppliedDirectiveType,
-						),
+				Type: NewList(
+					NewNonNull(
+						AppliedDirectiveType,
 					),
 				),
 			},
@@ -356,11 +354,9 @@ func init() {
 			},
 			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
-				Type: NewNonNull(
-					NewList(
-						NewNonNull(
-							AppliedDirectiveType,
-						),
+				Type: NewList(
+					NewNonNull(
+						AppliedDirectiveType,
 					),
 				),
 			},
@@ -412,11 +408,9 @@ func init() {
 			},
 			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
-				Type: NewNonNull(
-					NewList(
-						NewNonNull(
-							AppliedDirectiveType,
-						),
+				Type: NewList(
+					NewNonNull(
+						AppliedDirectiveType,
 					),
 				),
 			},
@@ -507,11 +501,9 @@ func init() {
 			},
 			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
-				Type: NewNonNull(
-					NewList(
-						NewNonNull(
-							AppliedDirectiveType,
-						),
+				Type: NewList(
+					NewNonNull(
+						AppliedDirectiveType,
 					),
 				),
 			},
@@ -641,11 +633,9 @@ func init() {
 			},
 			appliedDirectivesField: {
 				Resolve: appliedDirectiveResolver,
-				Type: NewNonNull(
-					NewList(
-						NewNonNull(
-							AppliedDirectiveType,
-						),
+				Type: NewList(
+					NewNonNull(
+						AppliedDirectiveType,
 					),
 				),
 			},
@@ -847,7 +837,7 @@ func appliedDirectiveResolver(p ResolveParams) (any, error) {
 
 	// Return an empty list if the source is not an AppliedDirectiveProvider,
 	// as the type is expected to not return nil.
-	return []struct{}{}, nil
+	return nil, nil
 }
 
 // Produces a GraphQL Value AST given a Golang value.
