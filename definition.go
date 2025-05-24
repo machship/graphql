@@ -384,6 +384,8 @@ type IsTypeOfFn func(p IsTypeOfParams) bool
 
 type InterfacesThunk func() []*Interface
 
+type InterfacesErrThunk func() ([]*Interface, error)
+
 type ObjectConfig struct {
 	Name        string     `json:"name"`
 	Interfaces  any        `json:"interfaces"`
@@ -394,6 +396,8 @@ type ObjectConfig struct {
 }
 
 type FieldsThunk func() Fields
+
+type FieldsErrThunk func() (Fields, error)
 
 func NewObject(config ObjectConfig) *Object {
 	objectType := &Object{}
@@ -453,6 +457,14 @@ func (gt *Object) Fields() FieldDefinitionMap {
 		configureFields = fields
 	case FieldsThunk:
 		configureFields = fields()
+	case FieldsErrThunk:
+		var err error
+		configureFields, err = fields()
+		if err != nil {
+			gt.err = fmt.Errorf("error while resolving fields for %s: %w", gt.Name(), err)
+			gt.initialisedFields = true
+			return nil
+		}
 	}
 
 	gt.fields, gt.err = defineFieldMap(gt, configureFields)
@@ -469,6 +481,14 @@ func (gt *Object) Interfaces() []*Interface {
 	switch iface := gt.typeConfig.Interfaces.(type) {
 	case InterfacesThunk:
 		configInterfaces = iface()
+	case InterfacesErrThunk:
+		var err error
+		configInterfaces, err = iface()
+		if err != nil {
+			gt.err = fmt.Errorf("error while resolving interfaces for %s: %w", gt.Name(), err)
+			gt.initialisedInterfaces = true
+			return nil
+		}
 	case []*Interface:
 		configInterfaces = iface
 	case nil:
@@ -791,6 +811,14 @@ func (it *Interface) Fields() (fields FieldDefinitionMap) {
 		configureFields = fields
 	case FieldsThunk:
 		configureFields = fields()
+	case FieldsErrThunk:
+		var err error
+		configureFields, err = fields()
+		if err != nil {
+			it.err = fmt.Errorf("error while resolving fields for %s: %w", it.Name(), err)
+			it.initialisedFields = true
+			return nil
+		}
 	}
 
 	it.fields, it.err = defineFieldMap(it, configureFields)
@@ -846,6 +874,8 @@ type Union struct {
 
 type UnionTypesThunk func() []*Object
 
+type UnionTypesErrThunk func() ([]*Object, error)
+
 type UnionConfig struct {
 	Name        string `json:"name"`
 	Types       any    `json:"types"`
@@ -881,6 +911,14 @@ func (ut *Union) Types() []*Object {
 	switch utype := ut.typeConfig.Types.(type) {
 	case UnionTypesThunk:
 		unionTypes = utype()
+	case UnionTypesErrThunk:
+		var err error
+		unionTypes, err = utype()
+		if err != nil {
+			ut.err = fmt.Errorf("error while resolving types for %s: %w", ut.Name(), err)
+			ut.initalizedTypes = true
+			return nil
+		}
 	case []*Object:
 		unionTypes = utype
 	case nil:

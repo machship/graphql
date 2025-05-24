@@ -31,6 +31,7 @@ const DefaultDeprecationReason = "No longer supported"
 var SpecifiedDirectives = []*Directive{
 	IncludeDirective,
 	SkipDirective,
+	OmitEmptyDirective,
 	DeprecatedDirective,
 }
 
@@ -178,5 +179,17 @@ var DeprecatedDirective = NewDirective(DirectiveConfig{
 	Locations: []string{
 		DirectiveLocationFieldDefinition,
 		DirectiveLocationEnumValue,
+	},
+})
+
+// SkipDirective Used to conditionally skip (exclude) fields or fragments.
+var OmitEmptyDirective = NewDirective(DirectiveConfig{
+	Name: "omitEmpty",
+	Description: "Directs the executor to omit this field or fragment when the response " +
+		"value resolves to null or an empty list.",
+	Locations: []string{
+		DirectiveLocationField,
+		DirectiveLocationFragmentSpread,
+		DirectiveLocationInlineFragment,
 	},
 })

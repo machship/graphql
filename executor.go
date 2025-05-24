@@ -300,6 +300,7 @@ func executeSubFields(p executeFieldsParams) map[string]any {
 		if state.hasNoFieldDefs {
 			continue
 		}
+
 		finalResults[orderedField.responseName] = resolved
 	}
 
@@ -475,6 +476,19 @@ func collectFields(p collectFieldsParams) (fields map[string][]*ast.Field) {
 		}
 	}
 	return fields
+}
+
+func shouldOmitResponseForNode(directives []*ast.Directive) bool {
+	for _, directive := range directives {
+		if directive == nil || directive.Name == nil {
+			continue
+		}
+		switch directive.Name.Value {
+		case OmitEmptyDirective.Name:
+			return true
+		}
+	}
+	return false
 }
 
 // Determines if a field should be included based on the @include and @skip
