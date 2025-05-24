@@ -1233,6 +1233,7 @@ func (i *InputObjectField) AppliedDirectives() []*AppliedDirective {
 type InputObjectConfigFieldMap map[string]*InputObjectFieldConfig
 type InputObjectFieldMap map[string]*InputObjectField
 type InputObjectConfigFieldMapThunk func() InputObjectConfigFieldMap
+type InputObjectConfigFieldMapErrThunk func() (InputObjectConfigFieldMap, error)
 type InputObjectConfig struct {
 	Name        string `json:"name"`
 	Fields      any    `json:"fields"`
@@ -1262,6 +1263,13 @@ func (gt *InputObject) defineFieldMap() InputObjectFieldMap {
 		fieldMap = fields
 	case InputObjectConfigFieldMapThunk:
 		fieldMap = fields()
+	case InputObjectConfigFieldMapErrThunk:
+		var err error
+		fieldMap, err = fields()
+		if err != nil {
+			gt.err = fmt.Errorf("error while resolving fields for %s: %w", gt.Name(), err)
+			return nil
+		}
 	}
 	resultFieldMap := InputObjectFieldMap{}
 
